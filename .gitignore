@@ -1,3 +1,9 @@
+# Environment
+.env
+.env.local
+.env.production
+.env.development
+
 # Python
 __pycache__/
 *.py[cod]
@@ -8,20 +14,18 @@ build/
 .venv/
 venv/
 env/
+*.sqlite3
 
 # Django
 *.log
 local_settings.py
-db.sqlite3
 staticfiles/
 
-# Node (old reference)
+# Node.js
 node_modules/
-
-# Environment
-.env
-.env.local
-.env.production
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # IDE
 .vscode/
