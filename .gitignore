@@ -216,3 +216,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Entorno Frontend (JavaScript) ---
+node_modules/
+npm-debug.log
+
+# --- Entorno de Desarrollo y Sistema Operativo ---
+db.sqlite3
+.vscode/
+.DS_Store
+Thumbs.db
