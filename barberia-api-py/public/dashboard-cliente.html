@@ -572,14 +572,18 @@
         }
     }
 
-    // Mapeo de imágenes de servicios por palabras clave
+    // Mapeo de imágenes de servicios por palabras clave (estilo Bogotá)
     const servicioImages = {
         'corte': 'https://images.unsplash.com/photo-1599407367267-f3a1df6cd13b?auto=format&fit=crop&w=600&q=80',
         'barba': 'https://images.unsplash.com/photo-1595617707802-a9403604ff04?auto=format&fit=crop&w=600&q=80',
         'fade': 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=80',
+        'degrado': 'https://images.unsplash.com/photo-1567894340315-735d7c361db7?auto=format&fit=crop&w=600&q=80',
+        'clasico': 'https://images.unsplash.com/photo-1599407367267-f3a1df6cd13b?auto=format&fit=crop&w=600&q=80',
         'afeitar': 'https://images.unsplash.com/photo-1599407373949-28747cef1b1a?auto=format&fit=crop&w=600&q=80',
         'tinte': 'https://images.unsplash.com/photo-1565521409098-33fdecd86f13?auto=format&fit=crop&w=600&q=80',
         'diseño': 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=600&q=80',
+        'cej': 'https://images.unsplash.com/photo-1621605815971-fbc98d665666?auto=format&fit=crop&w=600&q=80',
+        'infantil': 'https://images.unsplash.com/photo-1596728325488-58c87691e9af?auto=format&fit=crop&w=600&q=80',
         'default': 'https://images.unsplash.com/photo-1537639507592-cc4467fb1923?auto=format&fit=crop&w=600&q=80'
     };
 
@@ -611,7 +615,7 @@
                         <div class="service-info">
                             <h3>${s.nombre}</h3>
                             <p style="color: var(--muted); font-size: 14px;">${s.descripcion || 'Servicio profesional'}</p>
-                            <div class="service-price">$${s.precio.toLocaleString()}</div>
+                            <div class="service-price">$${Number(s.precio).toLocaleString('es-CO')} <small style="font-size: 11px; color: #999;">COP</small></div>
                             <p style="font-size: 12px; color: #999;">⏱️ ${s.duracion_minutos} minutos</p>
                             <button class="btn btn-primary btn-block" style="margin-top: 15px;" onclick="mostrarFormularioReserva(${s.id}, '${s.nombre}')">Agendar</button>
                         </div>

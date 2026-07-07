@@ -18,13 +18,27 @@
         .view.active { display: block; }
 
         /* CARRUSEL Y LANDING PAGE */
-        .hero { text-align: center; padding: 40px 20px; background: white; }
+        .hero { text-align: center; padding: 40px 20px 20px; background: white; }
         .hero h1 { font-size: 36px; color: #2c3e50; margin-bottom: 10px; }
         .hero p { color: #7f8c8d; font-size: 18px; margin-bottom: 30px; }
         
         .carousel-container { max-width: 800px; margin: auto; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.2); position: relative; height: 400px; background: #000; }
-        .carousel-slide { width: 100%; height: 100%; position: absolute; opacity: 0; transition: opacity 1s ease-in-out; object-fit: cover; }
+        .carousel-slide { width: 100%; height: 100%; position: absolute; opacity: 0; transition: opacity 1s ease-in-out; object-fit: cover; display: block; }
         .carousel-slide.active { opacity: 1; }
+        .carousel-slide-wrapper { position: relative; width: 100%; height: 100%; }
+        .carousel-slide-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .carousel-caption {
+            position: absolute; bottom: 50px; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white; padding: 30px 20px 20px; text-align: center;
+        }
+        .carousel-caption h3 { margin: 0; font-size: 22px; }
+        .carousel-caption p { margin: 5px 0 0; font-size: 14px; opacity: 0.9; }
+        .carousel-caption .price-badge {
+            display: inline-block; background: #e74c3c; color: white;
+            padding: 4px 14px; border-radius: 20px; font-weight: bold;
+            font-size: 16px; margin-top: 8px;
+        }
         
         .carousel-dots {
             position: absolute;
@@ -78,6 +92,35 @@
             transform: scale(1.1);
         }
 
+        /* SECCIÓN DE PRECIOS */
+        .pricing-section { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+        .pricing-section h2 { text-align: center; font-size: 28px; color: #2c3e50; margin-bottom: 30px; }
+        .pricing-section h2 small { display: block; font-size: 14px; color: #7f8c8d; font-weight: normal; margin-top: 5px; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .pricing-card {
+            background: white; border-radius: 10px; overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .pricing-card:hover { transform: translateY(-4px); }
+        .pricing-card img { width: 100%; height: 160px; object-fit: cover; }
+        .pricing-card-body { padding: 15px; }
+        .pricing-card-body h3 { margin: 0 0 5px; font-size: 16px; color: #2c3e50; }
+        .pricing-card-body p { margin: 0; font-size: 13px; color: #7f8c8d; }
+        .pricing-card-body .precio {
+            font-size: 20px; font-weight: bold; color: #e74c3c;
+            margin-top: 10px; display: flex; align-items: center; gap: 8px;
+        }
+        .pricing-card-body .precio small {
+            font-size: 12px; color: #999; font-weight: normal;
+            text-decoration: line-through;
+        }
+        .pricing-card .duracion {
+            display: inline-block; font-size: 12px; color: #999;
+            margin-top: 5px;
+        }
+        .pricing-loading { text-align: center; padding: 40px; color: #999; }
+
         /* FORMULARIOS (Login / Registro) */
         .auth-container { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
         .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
@@ -120,11 +163,46 @@
             <p>Estilo, precisión y elegancia en cada corte.</p>
             
             <div class="carousel-container">
-                <img src="https://images.unsplash.com/photo-1599407367267-f3a1df6cd13b?auto=format&fit=crop&w=1400&q=80" class="carousel-slide active" alt="Corte de cabello profesional" onerror="this.src='https://via.placeholder.com/1400x400?text=Barberia+VIP'">
-                <img src="https://images.unsplash.com/photo-1595617707802-a9403604ff04?auto=format&fit=crop&w=1400&q=80" class="carousel-slide" alt="Servicio de barba profesional" onerror="this.src='https://via.placeholder.com/1400x400?text=Servicios'">
-                <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1400&q=80" class="carousel-slide" alt="Corte Fade" onerror="this.src='https://via.placeholder.com/1400x400?text=Fade+Cuts'">
-                <img src="https://images.unsplash.com/photo-1599407373949-28747cef1b1a?auto=format&fit=crop&w=1400&q=80" class="carousel-slide" alt="Afeitado clásico" onerror="this.src='https://via.placeholder.com/1400x400?text=Afeitado'">
-                <img src="https://images.unsplash.com/photo-1537639507592-cc4467fb1923?auto=format&fit=crop&w=1400&q=80" class="carousel-slide" alt="Barbería interior moderna" onerror="this.src='https://via.placeholder.com/1400x400?text=Barberia+Moderna'">
+                <div class="carousel-slide-wrapper carousel-slide active">
+                    <img src="https://images.unsplash.com/photo-1599407367267-f3a1df6cd13b?auto=format&fit=crop&w=1400&q=80" alt="Corte clásico" onerror="this.src='https://via.placeholder.com/1400x400?text=Corte+Clasico'">
+                    <div class="carousel-caption">
+                        <h3>✂️ Corte Clásico</h3>
+                        <p>Corte a tijera y máquina con acabado profesional</p>
+                        <span class="price-badge">$18.000 COP</span>
+                    </div>
+                </div>
+                <div class="carousel-slide-wrapper carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1400&q=80" alt="Corte Fade" onerror="this.src='https://via.placeholder.com/1400x400?text=Corte+Fade'">
+                    <div class="carousel-caption">
+                        <h3>🔥 Corte Fade</h3>
+                        <p>Degradado perfecto, el estilo más popular en Bogotá</p>
+                        <span class="price-badge">$22.000 COP</span>
+                    </div>
+                </div>
+                <div class="carousel-slide-wrapper carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1596728325488-58c87691e9af?auto=format&fit=crop&w=1400&q=80" alt="Corte con barba" onerror="this.src='https://via.placeholder.com/1400x400?text=Corte+y+Barba'">
+                    <div class="carousel-caption">
+                        <h3>🧔 Corte + Barba</h3>
+                        <p>Corte personalizado + perfilado de barba completa</p>
+                        <span class="price-badge">$30.000 COP</span>
+                    </div>
+                </div>
+                <div class="carousel-slide-wrapper carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1599407373949-28747cef1b1a?auto=format&fit=crop&w=1400&q=80" alt="Afeitado clásico" onerror="this.src='https://via.placeholder.com/1400x400?text=Afeitado+Clasico'">
+                    <div class="carousel-caption">
+                        <h3>🪒 Afeitado Clásico</h3>
+                        <p>Afeitado tradicional con toalla caliente y navaja</p>
+                        <span class="price-badge">$15.000 COP</span>
+                    </div>
+                </div>
+                <div class="carousel-slide-wrapper carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1567894340315-735d7c361db7?auto=format&fit=crop&w=1400&q=80" alt="Corte degradado" onerror="this.src='https://via.placeholder.com/1400x400?text=Corte+Degradado'">
+                    <div class="carousel-caption">
+                        <h3>⚡ Corte Degradado + Cejas</h3>
+                        <p>Corte degradado con diseño y perfilado de cejas</p>
+                        <span class="price-badge">$35.000 COP</span>
+                    </div>
+                </div>
                 
                 <div class="carousel-controls">
                     <button class="carousel-btn" onclick="cambiarImagenAnterior()">❮</button>
@@ -132,6 +210,14 @@
                 </div>
                 
                 <div class="carousel-dots" id="carousel-dots"></div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE PRECIOS: Cortes y Servicios -->
+        <div class="pricing-section">
+            <h2>💈 Nuestros Cortes y Precios <small>Precios estándar en Bogotá — Calidad VIP</small></h2>
+            <div class="pricing-grid" id="pricing-grid">
+                <div class="pricing-loading">Cargando servicios...</div>
             </div>
         </div>
     </div>
@@ -221,10 +307,66 @@
         slides[slideIndex].classList.add('active');
         document.querySelectorAll('.dot')[slideIndex].classList.add('active');
     }
+
+    /* ==========================================
+       CATÁLOGO DE PRECIOS (Desde la API)
+       ========================================== */
+    const servicioImages = {
+        'corte': 'https://images.unsplash.com/photo-1599407367267-f3a1df6cd13b?auto=format&fit=crop&w=600&q=80',
+        'fade': 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=80',
+        'barba': 'https://images.unsplash.com/photo-1595617707802-a9403604ff04?auto=format&fit=crop&w=600&q=80',
+        'degrado': 'https://images.unsplash.com/photo-1567894340315-735d7c361db7?auto=format&fit=crop&w=600&q=80',
+        'clasico': 'https://images.unsplash.com/photo-1599407367267-f3a1df6cd13b?auto=format&fit=crop&w=600&q=80',
+        'cej': 'https://images.unsplash.com/photo-1621605815971-fbc98d665666?auto=format&fit=crop&w=600&q=80',
+        'diseño': 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=600&q=80',
+        'tinte': 'https://images.unsplash.com/photo-1565521409098-33fdecd86f13?auto=format&fit=crop&w=600&q=80',
+        'afeitar': 'https://images.unsplash.com/photo-1599407373949-28747cef1b1a?auto=format&fit=crop&w=600&q=80',
+        'default': 'https://images.unsplash.com/photo-1537639507592-cc4467fb1923?auto=format&fit=crop&w=600&q=80'
+    };
+
+    function obtenerImagenServicio(nombre) {
+        const name = nombre.toLowerCase();
+        for (const [key, url] of Object.entries(servicioImages)) {
+            if (key !== 'default' && name.includes(key)) return url;
+        }
+        return servicioImages.default;
+    }
+
+    async function cargarPrecios() {
+        try {
+            const res = await fetch('/api/servicios');
+            const servicios = await res.json();
+            const grid = document.getElementById('pricing-grid');
+
+            if (servicios.length === 0) {
+                grid.innerHTML = '<div class="pricing-loading">No hay servicios disponibles</div>';
+                return;
+            }
+
+            grid.innerHTML = '';
+            servicios.forEach(s => {
+                const img = obtenerImagenServicio(s.nombre);
+                grid.innerHTML += `
+                    <div class="pricing-card">
+                        <img src="${img}" alt="${s.nombre}" onerror="this.src='https://images.unsplash.com/photo-1537639507592-cc4467fb1923?auto=format&fit=crop&w=600&q=80'">
+                        <div class="pricing-card-body">
+                            <h3>${s.nombre}</h3>
+                            <p>${s.descripcion || 'Servicio profesional'}</p>
+                            <div class="precio">$${Number(s.precio).toLocaleString('es-CO')} <small>COP</small></div>
+                            <div class="duracion">⏱️ ${s.duracion_minutos} minutos</div>
+                        </div>
+                    </div>
+                `;
+            });
+        } catch (error) {
+            document.getElementById('pricing-grid').innerHTML = '<div class="pricing-loading">Error al cargar precios</div>';
+        }
+    }
     
     // Inicializar cuando el DOM esté listo
     document.addEventListener('DOMContentLoaded', () => {
         initCarouselDots();
+        cargarPrecios();
     });
     
     // Cambia la imagen cada 5 segundos
