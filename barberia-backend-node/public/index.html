@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbería VIP - Inicio</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f4f9; margin: 0; padding: 0; color: #333; }
+        
+        /* BARRA DE NAVEGACIÓN */
+        .navbar { background-color: #2c3e50; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .logo { font-size: 24px; font-weight: bold; text-decoration: none; color: white; cursor: pointer; transition: 0.3s; }
+        .logo:hover { color: #3498db; }
+        .nav-buttons .btn { margin-left: 10px; padding: 8px 15px; font-size: 14px; }
+
+        /* VISTAS */
+        .view { display: none; }
+        .view.active { display: block; }
+
+        /* CARRUSEL Y LANDING PAGE */
+        .hero { text-align: center; padding: 40px 20px; background: white; }
+        .hero h1 { font-size: 36px; color: #2c3e50; margin-bottom: 10px; }
+        .hero p { color: #7f8c8d; font-size: 18px; margin-bottom: 30px; }
+        
+        .carousel-container { max-width: 800px; margin: auto; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.2); position: relative; height: 400px; background: #000; }
+        .carousel-slide { width: 100%; height: 100%; position: absolute; opacity: 0; transition: opacity 1s ease-in-out; object-fit: cover; }
+        .carousel-slide.active { opacity: 1; }
+        
+        .carousel-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .dot.active {
+            background-color: white;
+            width: 30px;
+            border-radius: 6px;
+        }
+        
+        .carousel-controls {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 15px;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+        
+        .carousel-btn {
+            background: rgba(255,255,255,0.7);
+            border: none;
+            color: #333;
+            font-size: 20px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .carousel-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        /* FORMULARIOS (Login / Registro) */
+        .auth-container { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
+        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        input { width: calc(100% - 24px); padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
+        .btn { padding: 12px; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; transition: 0.3s; }
+        .btn-primary { background-color: #3498db; width: 100%; }
+        .btn-primary:hover { background-color: #2980b9; }
+        .btn-success { background-color: #2ecc71; width: 100%; }
+        .btn-outline { background-color: transparent; border: 2px solid white; color: white; }
+        .btn-outline:hover { background-color: white; color: #2c3e50; }
+        .link { color: #3498db; cursor: pointer; font-size: 14px; display: block; margin-top: 15px; text-decoration: underline; }
+        
+        .alert { padding: 10px; border-radius: 5px; margin-bottom: 10px; display: none; font-size: 14px; }
+        .alert-error { background-color: #f8d7da; color: #721c24; }
+        .alert-success { background-color: #d4edda; color: #155724; }
+    </style>
+    <link rel="stylesheet" href="styles/dashboard.css">
+</head>
+<body>
+
+    <!-- BARRA DE NAVEGACIÓN GLOBAL -->
+    <div class="navbar">
+        <!-- Este es el logo que funciona como botón de inicio (Recarga la página para volver al landing) -->
+        <a href="/" class="logo">💈 Barbería VIP</a>
+        <div class="nav-buttons">
+            <button class="btn btn-outline" onclick="cambiarVista('view-login')">Iniciar Sesión</button>
+            <button class="btn btn-primary" onclick="cambiarVista('view-registro')" style="width:auto;">Registrarse</button>
+        </div>
+    </div>
+
+    <!-- MENSAJES DE ALERTA GLOBAL -->
+    <div style="display:flex; justify-content:center; margin-top:10px;">
+        <div id="alert-box" class="alert" style="width: 100%; max-width: 400px; text-align:center;"></div>
+    </div>
+
+    <!-- VISTA 1: LANDING PAGE (CARRUSEL) -->
+    <div id="view-landing" class="view active">
+        <div class="hero">
+            <h1>Bienvenido a la mejor experiencia</h1>
+            <p>Estilo, precisión y elegancia en cada corte.</p>
+            
+            <div class="carousel-container">
+                <img src="https://images.unsplash.com/photo-1599407367267-f3a1df6cd13b?auto=format&fit=crop&w=1400&q=80" class="carousel-slide active" alt="Corte de cabello profesional" onerror="this.src='https://via.placeholder.com/1400x400?text=Barberia+VIP'">
+                <img src="https://images.unsplash.com/photo-1595617707802-a9403604ff04?auto=format&fit=crop&w=1400&q=80" class="carousel-slide" alt="Servicio de barba profesional" onerror="this.src='https://via.placeholder.com/1400x400?text=Servicios'">
+                <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1400&q=80" class="carousel-slide" alt="Corte Fade" onerror="this.src='https://via.placeholder.com/1400x400?text=Fade+Cuts'">
+                <img src="https://images.unsplash.com/photo-1599407373949-28747cef1b1a?auto=format&fit=crop&w=1400&q=80" class="carousel-slide" alt="Afeitado clásico" onerror="this.src='https://via.placeholder.com/1400x400?text=Afeitado'">
+                <img src="https://images.unsplash.com/photo-1537639507592-cc4467fb1923?auto=format&fit=crop&w=1400&q=80" class="carousel-slide" alt="Barbería interior moderna" onerror="this.src='https://via.placeholder.com/1400x400?text=Barberia+Moderna'">
+                
+                <div class="carousel-controls">
+                    <button class="carousel-btn" onclick="cambiarImagenAnterior()">❮</button>
+                    <button class="carousel-btn" onclick="cambiarImagenSiguiente()">❯</button>
+                </div>
+                
+                <div class="carousel-dots" id="carousel-dots"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISTA 2: LOGIN -->
+    <div id="view-login" class="view">
+        <div class="auth-container">
+            <div class="card">
+                <h2>Iniciar Sesión</h2>
+                <input type="email" id="login-email" placeholder="Tu correo electrónico">
+                <input type="password" id="login-password" placeholder="Tu contraseña">
+                <button class="btn btn-primary" onclick="iniciarSesion()">Entrar</button>
+                <span class="link" onclick="cambiarVista('view-recuperar')" style="color: #7f8c8d;">¿Olvidaste tu contraseña?</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISTA 3: REGISTRO -->
+    <div id="view-registro" class="view">
+        <div class="auth-container">
+            <div class="card">
+                <h2>Crear Cuenta</h2>
+                <input type="text" id="reg-nombre" placeholder="Nombre completo">
+                <input type="email" id="reg-email" placeholder="Correo electrónico">
+                <input type="password" id="reg-password" placeholder="Crea una contraseña">
+                <button class="btn btn-success" onclick="registrarUsuario()">Registrarme</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISTA 4: RECUPERAR CONTRASEÑA -->
+    <div id="view-recuperar" class="view">
+        <div class="auth-container">
+            <div class="card">
+                <h2>Recuperar Acceso</h2>
+                <p style="font-size: 14px; color: #666;">Ingresa tu correo para generar una clave temporal.</p>
+                <input type="email" id="rec-email" placeholder="Tu correo electrónico">
+                <button class="btn btn-primary" style="background-color: #e67e22;" onclick="recuperarPassword()">Restablecer</button>
+                <span class="link" onclick="cambiarVista('view-login')">Volver al Login</span>
+            </div>
+        </div>
+    </div>
+
+<script>
+    /* ==========================================
+       LÓGICA DEL CARRUSEL
+       ========================================== */
+    let slideIndex = 0;
+    const slides = document.querySelectorAll('.carousel-slide');
+    
+    // Crear los puntos indicadores
+    function initCarouselDots() {
+        const dotsContainer = document.getElementById('carousel-dots');
+        slides.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (index === 0 ? ' active' : '');
+            dot.onclick = () => goToSlide(index);
+            dotsContainer.appendChild(dot);
+        });
+    }
+    
+    function goToSlide(n) {
+        slideIndex = n;
+        mostrarSlide();
+    }
+    
+    function cambiarImagenSiguiente() {
+        slideIndex++;
+        if (slideIndex >= slides.length) slideIndex = 0;
+        mostrarSlide();
+    }
+    
+    function cambiarImagenAnterior() {
+        slideIndex--;
+        if (slideIndex < 0) slideIndex = slides.length - 1;
+        mostrarSlide();
+    }
+    
+    function cambiarImagen() {
+        cambiarImagenSiguiente();
+    }
+    
+    function mostrarSlide() {
+        slides.forEach(slide => slide.classList.remove('active'));
+        document.querySelectorAll('.dot').forEach(dot => dot.classList.remove('active'));
+        
+        slides[slideIndex].classList.add('active');
+        document.querySelectorAll('.dot')[slideIndex].classList.add('active');
+    }
+    
+    // Inicializar cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', () => {
+        initCarouselDots();
+    });
+    
+    // Cambia la imagen cada 5 segundos
+    setInterval(cambiarImagen, 5000);
+
+    /* ==========================================
+       LÓGICA DE NAVEGACIÓN Y ALERTAS
+       ========================================== */
+    function cambiarVista(vistaId) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(vistaId).classList.add('active');
+        ocultarAlerta();
+    }
+
+    function mostrarAlerta(mensaje, tipo) {
+        const box = document.getElementById('alert-box');
+        box.innerText = mensaje;
+        box.className = `alert alert-${tipo}`;
+        box.style.display = 'block';
+    }
+    function ocultarAlerta() { document.getElementById('alert-box').style.display = 'none'; }
+
+    /* ==========================================
+       PETICIONES AL BACKEND (AUTH)
+       ========================================== */
+    window.onload = () => {
+        // Si ya está logueado, lo enviamos de una vez a su panel
+        const token = localStorage.getItem('token');
+        const rol = localStorage.getItem('rol');
+        if (token) {
+            if (rol === 'CLIENTE') window.location.href = '/dashboard-cliente.html';
+            else if (rol === 'BARBERO') window.location.href = '/dashboard-barbero.html';
+            else window.location.href = '/dashboard-admin.html';
+        }
+    };
+
+    async function registrarUsuario() {
+        const nombre = document.getElementById('reg-nombre').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const password = document.getElementById('reg-password').value;
+
+        if (!nombre || !email || !password) return mostrarAlerta('Todos los campos son obligatorios.', 'error');
+        if (password.length < 6) return mostrarAlerta('La contraseña debe tener al menos 6 caracteres.', 'error');
+
+        const res = await fetch('/api/auth/registro', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, email, password })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+            mostrarAlerta(data.mensaje, 'success');
+            setTimeout(() => cambiarVista('view-login'), 2000);
+        } else {
+            mostrarAlerta(data.error, 'error');
+        }
+    }
+
+    async function iniciarSesion() {
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        const res = await fetch('/api/auth/login', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('rol', data.rol);
+            localStorage.setItem('nombre', data.mensaje.replace('Bienvenido ', ''));
+            
+            if (data.rol === 'CLIENTE') window.location.href = '/dashboard-cliente.html';
+            else if (data.rol === 'BARBERO') window.location.href = '/dashboard-barbero.html';
+            else window.location.href = '/dashboard-admin.html';
+        } else {
+            mostrarAlerta(data.error, 'error');
+        }
+    }
+
+    async function recuperarPassword() {
+        const email = document.getElementById('rec-email').value;
+        const res = await fetch('/api/auth/recuperar', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+            mostrarAlerta(`${data.mensaje} ${data.instruccion}`, 'success');
+        } else {
+            mostrarAlerta(data.error, 'error');
+        }
+    }
+</script>
+
+</body>
+</html>
