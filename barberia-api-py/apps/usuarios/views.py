@@ -1,7 +1,9 @@
-from rest_framework import viewsets
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
 from .models import Usuario
-from .serializers import UsuarioSerializer
+from .serializers import UsuarioSerializer, ActualizarPerfilSerializer
 from .permissions import EsAdmin
 
 
@@ -17,3 +19,11 @@ class UsuarioViewSet(viewsets.ModelViewSet):
                 return [IsAuthenticated()]
             return [IsAuthenticated(), EsAdmin()]
         return [AllowAny()]
+
+    @action(detail=False, methods=['put'], permission_classes=[IsAuthenticated])
+    def mi_perfil(self, request):
+        serializer = ActualizarPerfilSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(UsuarioSerializer(request.user).data)
+        return Response(serializer.errors, status=400)

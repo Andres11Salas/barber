@@ -26,3 +26,10 @@ class UsuarioPerfilSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
         fields = ['id', 'nombre', 'email', 'telefono', 'bio', 'rol']
+        read_only_fields = ['id', 'email', 'rol']
+
+
+class ActualizarPerfilSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Usuario
+        fields = ['nombre', 'telefono', 'bio']

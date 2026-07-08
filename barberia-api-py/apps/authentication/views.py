@@ -1,7 +1,6 @@
 import random
 import string
-import google.auth.transport.requests
-import google.oauth2.id_token
+import requests as http_requests
 from django.conf import settings
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -84,10 +83,18 @@ def google_register(request):
     id_token = serializer.validated_data['id_token']
 
     try:
-        request_adapter = google.auth.transport.requests.Request()
-        info = google.oauth2.id_token.verify_oauth2_token(
-            id_token, request_adapter, settings.GOOGLE_CLIENT_ID
+        resp = http_requests.get(
+            f'https://oauth2.googleapis.com/tokeninfo?id_token={id_token}',
+            timeout=10
         )
+        if resp.status_code != 200:
+            raise Exception('Token inválido')
+        info = resp.json()
+        if info.get('aud') != settings.GOOGLE_CLIENT_ID:
+            return Response(
+                {'error': 'El token no pertenece a esta aplicación.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
     except Exception:
         return Response(
             {'error': 'El token de Google no es válido o ha expirado.'},

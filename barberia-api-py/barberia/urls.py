@@ -6,6 +6,7 @@ from django.views.static import serve
 urlpatterns = [
     re_path(r'^api/auth(?:/|$)', include('apps.authentication.urls')),
     re_path(r'^api/usuarios(?:/|$)', include('apps.usuarios.urls')),
+    re_path(r'^api/usuarios/', include('apps.usuarios.urls')),
     re_path(r'^api/servicios(?:/|$)', include('apps.servicios.urls')),
     re_path(r'^api/citas(?:/|$)', include('apps.citas.urls')),
     re_path(r'^api/publicaciones(?:/|$)', include('apps.publicaciones.urls')),

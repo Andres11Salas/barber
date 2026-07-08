@@ -361,12 +361,11 @@
         const token = localStorage.getItem('token');
         const body = {
             nombre: document.getElementById('input-nombre').value,
-            email: document.getElementById('input-email').value,
             telefono: document.getElementById('input-telefono').value,
             bio: document.getElementById('input-bio').value
         };
         try {
-            const res = await fetch('/api/usuarios/' + usuarioId, {
+            const res = await fetch('/api/usuarios/mi_perfil', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                 body: JSON.stringify(body)
@@ -377,7 +376,8 @@
                 cargarPerfil();
             } else {
                 const err = await res.json();
-                await Swal.fire({ icon: 'error', title: 'Error', text: err.error || err.message, background: '#1a1a1a', color: '#f0f0f0' });
+                const msg = Object.values(err).flat().join(', ') || 'Error al guardar';
+                await Swal.fire({ icon: 'error', title: 'Error', text: msg, background: '#1a1a1a', color: '#f0f0f0' });
             }
         } catch (e) {
             await Swal.fire({ icon: 'error', title: 'Error', text: 'Error al conectar', background: '#1a1a1a', color: '#f0f0f0' });
