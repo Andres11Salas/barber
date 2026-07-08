@@ -83,6 +83,7 @@ REST_FRAMEWORK = {
 
 from datetime import timedelta
 
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')
 MERCADO_PAGO_ACCESS_TOKEN = os.getenv('MERCADO_PAGO_ACCESS_TOKEN', '')
 MERCADO_PAGO_PUBLIC_KEY = os.getenv('MERCADO_PAGO_PUBLIC_KEY', '')
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000')

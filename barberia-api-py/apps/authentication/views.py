@@ -1,5 +1,8 @@
 import random
 import string
+import google.auth.transport.requests
+import google.oauth2.id_token
+from django.conf import settings
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -8,7 +11,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from apps.usuarios.models import Usuario
 from .serializers import (
     LoginSerializer, RegistroSerializer,
-    RecuperarPasswordSerializer
+    RecuperarPasswordSerializer, GoogleRegisterSerializer
 )
 
 
@@ -69,4 +72,57 @@ def recuperar(request):
     return Response({
         'mensaje': 'Se ha restablecido tu acceso.',
         'instruccion': f'Tu contraseña temporal es: {password_temporal}. Inicia sesión y cámbiala.',
+    })
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def google_register(request):
+    serializer = GoogleRegisterSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    id_token = serializer.validated_data['id_token']
+
+    try:
+        request_adapter = google.auth.transport.requests.Request()
+        info = google.oauth2.id_token.verify_oauth2_token(
+            id_token, request_adapter, settings.GOOGLE_CLIENT_ID
+        )
+    except Exception:
+        return Response(
+            {'error': 'El token de Google no es válido o ha expirado.'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    email = info.get('email')
+    nombre = serializer.validated_data.get('nombre') or info.get('name', 'Usuario Google')
+
+    if not email:
+        return Response(
+            {'error': 'No se pudo obtener el correo de tu cuenta de Google.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    usuario, created = Usuario.objects.get_or_create(
+        email=email,
+        defaults={
+            'nombre': nombre,
+            'password': f'google_{random.choices(string.ascii_letters + string.digits, k=16)}',
+            'rol': 'CLIENTE',
+        }
+    )
+
+    if created:
+        mensaje = 'Cuenta creada con Google. ¡Bienvenido!'
+    else:
+        mensaje = 'Inicio de sesión con Google exitoso. Bienvenido de nuevo.'
+
+    token = AccessToken.for_user(usuario)
+    token['rol'] = usuario.rol
+
+    return Response({
+        'mensaje': mensaje,
+        'token': str(token),
+        'rol': usuario.rol,
+        'nombre': usuario.nombre,
     })

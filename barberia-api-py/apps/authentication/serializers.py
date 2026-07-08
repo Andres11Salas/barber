@@ -33,3 +33,8 @@ class AuthResponseSerializer(serializers.Serializer):
     mensaje = serializers.CharField()
     token = serializers.CharField(required=False)
     rol = serializers.CharField(required=False)
+
+
+class GoogleRegisterSerializer(serializers.Serializer):
+    id_token = serializers.CharField()
+    nombre = serializers.CharField(required=False, allow_blank=True)
