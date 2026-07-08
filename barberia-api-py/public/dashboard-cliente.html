@@ -484,33 +484,104 @@
         } catch (e) { console.error('Error citas:', e); }
     }
 
-    function mostrarFormularioReserva(servicioId) {
-        Swal.fire({
-            title: 'Agendar Cita',
-            html: `
-                <input type="date" id="swal-fecha" class="swal2-input" min="${new Date().toISOString().split('T')[0]}">
-                <input type="time" id="swal-hora" class="swal2-input" style="margin-top:10px;">
-                <input type="number" id="swal-barbero" class="swal2-input" style="margin-top:10px;" placeholder="ID del barbero">
-            `,
-            confirmButtonText: 'Agendar',
-            showCancelButton: true,
-            cancelButtonText: 'Cancelar',
-            background: '#1a1a1a', color: '#f0f0f0',
-            preConfirm: () => {
-                const fecha = document.getElementById('swal-fecha').value;
-                const hora = document.getElementById('swal-hora').value;
-                const barberoId = document.getElementById('swal-barbero').value;
-                if (!fecha || !hora || !barberoId) {
-                    Swal.showValidationMessage('Todos los campos son obligatorios');
-                    return false;
+    let bookingServicioId = null;
+    let bookingBarberos = [];
+
+    async function mostrarFormularioReserva(servicioId) {
+        bookingServicioId = servicioId;
+        const hoy = new Date().toISOString().split('T')[0];
+
+        try {
+            const res = await fetch(`/api/servicios`);
+            const servicios = await res.json();
+            const serv = servicios.find(s => s.id === servicioId);
+            const precio = serv ? Number(serv.precio).toLocaleString('es-CO') : '';
+
+            Swal.fire({
+                title: '✂️ Agendar Cita',
+                html: `
+                    <div style="text-align:left;margin-bottom:12px;color:var(--accent);font-weight:600;">
+                        ${serv ? serv.nombre : 'Servicio'} — $${precio} COP
+                        ${serv ? '<br><small style="color:#888;">⏱️ ' + serv.duracion_minutos + ' min</small>' : ''}
+                    </div>
+                    <label style="color:#aaa;font-size:12px;display:block;text-align:left;">Fecha</label>
+                    <input type="date" id="swal-fecha" class="swal2-input" min="${hoy}" style="width:100%;">
+                    <label id="swal-barbero-label" style="color:#aaa;font-size:12px;display:none;text-align:left;margin-top:8px;">Barbero</label>
+                    <select id="swal-barbero" class="swal2-input" style="width:100%;display:none;background:#222;color:#f0f0f0;border:1px solid #333;padding:10px;border-radius:6px;">
+                        <option value="">Selecciona fecha primero</option>
+                    </select>
+                    <label id="swal-hora-label" style="color:#aaa;font-size:12px;display:none;text-align:left;margin-top:8px;">Hora</label>
+                    <select id="swal-hora" class="swal2-input" style="width:100%;display:none;background:#222;color:#f0f0f0;border:1px solid #333;padding:10px;border-radius:6px;">
+                        <option value="">Selecciona barbero primero</option>
+                    </select>
+                    <div id="swal-booking-info" style="margin-top:10px;font-size:12px;color:#888;text-align:center;"></div>
+                `,
+                confirmButtonText: 'Confirmar Cita',
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#c9a84c',
+                cancelButtonColor: '#666',
+                background: '#1a1a1a', color: '#f0f0f0',
+                didOpen: () => {
+                    document.getElementById('swal-fecha').addEventListener('change', async function() {
+                        const fecha = this.value;
+                        if (!fecha) return;
+                        document.getElementById('swal-booking-info').innerText = 'Cargando barberos...';
+                        try {
+                            const r = await fetch(`/api/citas/barberos_disponibles?fecha=${fecha}&servicio_id=${servicioId}`);
+                            const data = await r.json();
+                            bookingBarberos = data.barberos || [];
+                            const sel = document.getElementById('swal-barbero');
+                            sel.style.display = 'block';
+                            document.getElementById('swal-barbero-label').style.display = 'block';
+                            sel.innerHTML = '<option value="">Selecciona un barbero</option>';
+                            bookingBarberos.forEach(b => {
+                                sel.innerHTML += `<option value="${b.id}">💈 ${b.nombre} (${b.citas_count} citas hoy)</option>`;
+                            });
+                            document.getElementById('swal-booking-info').innerText = `${bookingBarberos.length} barbero(s) disponible(s) el ${fecha}`;
+                        } catch(e) {
+                            document.getElementById('swal-booking-info').innerText = 'Error al cargar barberos';
+                        }
+                    });
+
+                    document.getElementById('swal-barbero').addEventListener('change', async function() {
+                        const barberoId = this.value;
+                        const fecha = document.getElementById('swal-fecha').value;
+                        if (!barberoId || !fecha) return;
+                        document.getElementById('swal-booking-info').innerText = 'Cargando horarios...';
+                        try {
+                            const r = await fetch(`/api/citas/horarios_disponibles?fecha=${fecha}&barbero_id=${barberoId}&servicio_id=${bookingServicioId}`);
+                            const data = await r.json();
+                            const sel = document.getElementById('swal-hora');
+                            sel.style.display = 'block';
+                            document.getElementById('swal-hora-label').style.display = 'block';
+                            sel.innerHTML = '<option value="">Selecciona una hora</option>';
+                            (data.horarios || []).forEach(h => {
+                                sel.innerHTML += `<option value="${h.hora}">${h.display}</option>`;
+                            });
+                            document.getElementById('swal-booking-info').innerText = `${data.horarios.length} horario(s) disponible(s)`;
+                        } catch(e) {
+                            document.getElementById('swal-booking-info').innerText = 'Error al cargar horarios';
+                        }
+                    });
+                },
+                preConfirm: () => {
+                    const fecha = document.getElementById('swal-fecha').value;
+                    const barberoId = document.getElementById('swal-barbero').value;
+                    const hora = document.getElementById('swal-hora').value;
+                    if (!fecha) { Swal.showValidationMessage('Selecciona una fecha'); return false; }
+                    if (!barberoId) { Swal.showValidationMessage('Selecciona un barbero'); return false; }
+                    if (!hora) { Swal.showValidationMessage('Selecciona una hora'); return false; }
+                    return { fecha, barberoId: parseInt(barberoId), hora };
                 }
-                return { fecha, hora, barberoId: parseInt(barberoId) };
-            }
-        }).then(result => {
-            if (result.isConfirmed) {
-                confirmarReserva(servicioId, result.value.barberoId, result.value.fecha, result.value.hora);
-            }
-        });
+            }).then(result => {
+                if (result.isConfirmed) {
+                    confirmarReserva(servicioId, result.value.barberoId, result.value.fecha, result.value.hora);
+                }
+            });
+        } catch(e) {
+            await Swal.fire({ icon: 'error', title: 'Error', text: 'Error al cargar servicios', background: '#1a1a1a', color: '#f0f0f0' });
+        }
     }
 
     async function confirmarReserva(servicioId, barberoId, fecha, hora) {
@@ -521,16 +592,18 @@
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                 body: JSON.stringify({ cliente_id: usuarioId, barbero_id: barberoId, servicio_id: servicioId, fecha, hora })
             });
+            const data = await res.json();
             if (res.ok) {
-                await Swal.fire({ icon: 'success', title: 'Cita agendada', timer: 1500, showConfirmButton: false, background: '#1a1a1a', color: '#f0f0f0' });
+                await Swal.fire({ icon: 'success', title: '✅ Cita Agendada', html: `Con el barbero <strong>#${barberoId}</strong> el <strong>${fecha}</strong> a las <strong>${hora}</strong>`, timer: 2500, showConfirmButton: false, background: '#1a1a1a', color: '#f0f0f0' });
                 cargarCitas();
-                document.querySelector('.tab-btn[onclick*="citas"]').click();
+                document.querySelectorAll('.tab-btn')[3].click();
             } else {
-                const err = await res.json();
-                await Swal.fire({ icon: 'error', title: 'Error', text: err.error || err.message, background: '#1a1a1a', color: '#f0f0f0' });
+                let msg = data.error || data.message || 'Error al agendar';
+                if (data.error && Array.isArray(data.error)) msg = data.error.join(', ');
+                await Swal.fire({ icon: 'error', title: 'Error', text: msg, background: '#1a1a1a', color: '#f0f0f0' });
             }
         } catch (e) {
-            await Swal.fire({ icon: 'error', title: 'Error', text: 'Error de conexión', background: '#1a1a1a', color: '#f0f0f0' });
+            await Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servidor.', background: '#1a1a1a', color: '#f0f0f0' });
         }
     }
 
