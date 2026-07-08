@@ -9,6 +9,7 @@ urlpatterns = [
     re_path(r'^api/servicios(?:/|$)', include('apps.servicios.urls')),
     re_path(r'^api/citas(?:/|$)', include('apps.citas.urls')),
     re_path(r'^api/publicaciones(?:/|$)', include('apps.publicaciones.urls')),
+    re_path(r'^api/pagos(?:/|$)', include('apps.pagos.urls')),
 ]
 
 public_dir = settings.BASE_DIR / 'public'

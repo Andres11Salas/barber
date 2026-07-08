@@ -367,6 +367,7 @@
         }
     </style>
     <link rel="stylesheet" href="styles/dashboard.css">
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
 </head>
 <body>
 
@@ -479,8 +480,23 @@
 
 </div>
 
+<div id="mpBrickContainer" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.3); z-index: 1000; min-width: 400px; max-width: 90%;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0; color: var(--brand-blue);">Pagar con Mercado Pago</h3>
+        <button onclick="cerrarModalPago()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--muted);">&times;</button>
+    </div>
+    <div id="subscriptionBrick_container"></div>
+    <div id="mp-error" style="color: red; margin-top: 10px; display: none;"></div>
+</div>
+<div id="modalOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;" onclick="cerrarModalPago()"></div>
+
 <script>
-    let usuarioId = null;
+    const MP_PUBLIC_KEY = 'TEST-62d9262c-1b0d-4948-a0d7-0df757669d7a';
+    let mp = null;
+    let bricksBuilder = null;
+    let pagoActualId = null;
+
+    window.onload = () => {
 
     window.onload = () => {
         const token = localStorage.getItem('token');
@@ -684,7 +700,10 @@
                         <td>💈 ${c.barbero?.nombre || 'N/A'}</td>
                         <td>✂️ ${c.servicio?.nombre || 'N/A'}</td>
                         <td>$${c.servicio?.precio.toLocaleString() || 'N/A'}</td>
-                        <td><button class="btn btn-danger btn-small" onclick="cancelarCita(${c.id})">Cancelar</button></td>
+                        <td>
+    <button class="btn btn-danger btn-small" onclick="cancelarCita(${c.id})">Cancelar</button>
+    <button class="btn btn-primary btn-small" style="margin-left: 5px;" onclick="pagarCita(${c.id}, ${c.servicio?.precio || 0})">Pagar</button>
+</td>
                     </tr>
                 `;
             });
@@ -759,6 +778,67 @@
 
     function verPerfil(barberoId) {
         window.location.href = `/perfil-barbero.html?id=${barberoId}`;
+    }
+
+    function cerrarModalPago() {
+        document.getElementById('mpBrickContainer').style.display = 'none';
+        document.getElementById('modalOverlay').style.display = 'none';
+        document.getElementById('subscriptionBrick_container').innerHTML = '';
+        pagoActualId = null;
+    }
+
+    async function pagarCita(citaId, monto) {
+        pagoActualId = citaId;
+        const token = localStorage.getItem('token');
+        document.getElementById('mp-error').style.display = 'none';
+
+        try {
+            const res = await fetch('/api/pagos/crear', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ citaId: citaId, monto: monto })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || 'Error al crear el pago');
+            }
+
+            document.getElementById('mpBrickContainer').style.display = 'block';
+            document.getElementById('modalOverlay').style.display = 'block';
+
+            if (data.url_pago) {
+                window.location.href = data.url_pago;
+                return;
+            }
+
+            if (!mp) {
+                mp = new MercadoPago(MP_PUBLIC_KEY);
+                bricksBuilder = mp.bricks();
+            }
+
+            bricksBuilder.create('subscription', 'subscriptionBrick_container', {
+                initialization: {
+                    planId: data.preference_id,
+                },
+                callbacks: {
+                    onError: (error) => {
+                        console.error(error);
+                        document.getElementById('mp-error').style.display = 'block';
+                        document.getElementById('mp-error').innerText = 'Error al procesar el pago';
+                    },
+                    onReady: () => {}
+                }
+            });
+        } catch (error) {
+            console.error(error);
+            document.getElementById('mp-error').style.display = 'block';
+            document.getElementById('mp-error').innerText = 'Error: ' + error.message;
+        }
     }
 </script>
 

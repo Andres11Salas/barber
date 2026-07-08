@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'apps.citas',
     'apps.publicaciones',
     'apps.authentication',
+    'apps.pagos',
 ]
 
 MIDDLEWARE = [
@@ -81,6 +82,11 @@ REST_FRAMEWORK = {
 }
 
 from datetime import timedelta
+
+MERCADO_PAGO_ACCESS_TOKEN = os.getenv('MERCADO_PAGO_ACCESS_TOKEN', '')
+MERCADO_PAGO_PUBLIC_KEY = os.getenv('MERCADO_PAGO_PUBLIC_KEY', '')
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000')
+BACKEND_URL = os.getenv('BACKEND_URL', 'http://localhost:8000')
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),
