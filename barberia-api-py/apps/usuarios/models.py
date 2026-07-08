@@ -17,6 +17,8 @@ class Usuario(models.Model):
     nombre = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
+    telefono = models.CharField(max_length=20, null=True, blank=True)
+    bio = models.TextField(null=True, blank=True)
     rol = models.CharField(max_length=20, choices=ROLES, default='CLIENTE')
     estado = models.CharField(max_length=20, choices=ESTADOS, default='ACTIVO')
     createdAt = models.DateTimeField(auto_now_add=True, db_column='createdAt')

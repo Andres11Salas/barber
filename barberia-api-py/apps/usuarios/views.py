@@ -10,6 +10,10 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     serializer_class = UsuarioSerializer
 
     def get_permissions(self):
-        if self.action in ('create', 'update', 'partial_update', 'destroy'):
+        if self.action in ('create', 'destroy'):
+            return [IsAuthenticated(), EsAdmin()]
+        if self.action in ('update', 'partial_update'):
+            if self.request.user and self.kwargs.get('pk') == str(self.request.user.pk):
+                return [IsAuthenticated()]
             return [IsAuthenticated(), EsAdmin()]
         return [AllowAny()]
