@@ -176,6 +176,18 @@
         thead { background: #0a0a0a; }
         th { padding: 12px 15px; text-align: left; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; font-size: 12px; }
         td { padding: 12px 15px; border-bottom: 1px solid #222; font-size: 14px; }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 200; justify-content: center; align-items: center;
+        }
+        .modal.active { display: flex; }
+        .modal img { max-width: 90%; max-height: 90%; border-radius: 8px; }
+        .modal-close {
+            position: absolute; top: 20px; right: 30px;
+            color: white; font-size: 36px; cursor: pointer; transition: 0.3s;
+        }
+        .modal-close:hover { color: var(--accent); }
         tbody tr:hover { background: rgba(201,168,76,0.05); }
 
         .btn {
@@ -191,6 +203,27 @@
         .btn-block { width: 100%; }
 
         .no-data { text-align: center; padding: 40px; color: var(--text-muted); }
+
+        .publicacion { background: var(--bg-card); border-radius: 10px; border: 1px solid rgba(201,168,76,0.1); margin-bottom: 18px; overflow: hidden; }
+        .pub-header { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
+        .pub-header h3 { font-family: 'Oswald', sans-serif; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; font-size: 15px; }
+        .pub-header small { color: #555; font-size: 11px; }
+        .pub-desc { padding: 0 16px 10px; color: #ccc; font-size: 14px; }
+        .pub-media { width: 100%; max-height: 500px; object-fit: cover; cursor: pointer; transition: 0.3s; display: block; }
+        .pub-media:hover { opacity: 0.9; }
+        .pub-actions { padding: 10px 16px; display: flex; gap: 12px; align-items: center; border-top: 1px solid #222; }
+        .pub-actions button { background: none; border: none; color: #888; cursor: pointer; font-size: 15px; transition: 0.2s; display: flex; align-items: center; gap: 4px; }
+        .pub-actions button:hover { color: var(--accent); }
+        .pub-actions .liked { color: var(--accent); }
+        .comentarios { padding: 0 16px 14px; }
+        .comentario { padding: 6px 0; border-bottom: 1px solid #1a1a1a; font-size: 13px; }
+        .comentario-user { color: var(--accent); font-weight: 600; font-size: 12px; display: flex; justify-content: space-between; }
+        .comentario-delete { color: #c0392b; cursor: pointer; font-size: 11px; }
+        .comentario-texto { color: #ccc; margin-top: 2px; }
+        .comentario-input { display: flex; gap: 8px; margin-top: 8px; }
+        .comentario-input input { flex: 1; padding: 8px; border: 1px solid #333; border-radius: 5px; background: #222; color: #f0f0f0; font-size: 13px; }
+        .comentario-input input:focus { border-color: var(--accent); outline: none; }
+        .comentario-input button { padding: 8px 14px; background: var(--gold-gradient); color: #000; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 12px; }
 
         @media (max-width: 768px) {
             .header { padding: 10px 15px; flex-direction: column; gap: 8px; }
@@ -216,7 +249,7 @@
     <button class="tab-btn" onclick="mostrarSeccion('servicios', this)">✂️ Servicios</button>
     <button class="tab-btn" onclick="mostrarSeccion('barberos', this)">💇 Barberos</button>
     <button class="tab-btn" onclick="mostrarSeccion('citas', this)">📅 Citas</button>
-    <button class="tab-btn" onclick="irGaleria()">📸 Galería</button>
+    <button class="tab-btn" onclick="mostrarSeccion('galeria', this)">📸 Galería</button>
 </div>
 
 <div class="container">
@@ -260,6 +293,16 @@
             </table>
         </div>
     </div>
+
+    <div id="sec-galeria" class="section">
+        <h2>📸 Galería de Trabajos</h2>
+        <div id="publicaciones-container"><div class="no-data">Cargando...</div></div>
+    </div>
+</div>
+
+<div id="media-modal" class="modal" onclick="cerrarModal()">
+    <span class="modal-close">&times;</span>
+    <img id="modal-media" src="" alt="Media">
 </div>
 
 <script>
@@ -290,9 +333,8 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('sec-' + seccion).classList.add('active');
         if (btn) btn.classList.add('active');
+        if (seccion === 'galeria') cargarPublicaciones();
     }
-
-    function irGaleria() { window.location.href = '/galeria-publicaciones.html'; }
 
     function cerrarSesion() {
         localStorage.clear();
@@ -514,6 +556,90 @@
     }
 
     function verPerfil(id) { window.location.href = '/perfil-barbero.html?id=' + id; }
+
+    function abrirMedia(src) { document.getElementById('modal-media').src = src; document.getElementById('media-modal').classList.add('active'); }
+    function cerrarModal() { document.getElementById('media-modal').classList.remove('active'); }
+
+    async function cargarPublicaciones() {
+        try {
+            const res = await fetch('/api/publicaciones');
+            const pubs = await res.json();
+            const c = document.getElementById('publicaciones-container');
+            if (!pubs || pubs.length === 0) { c.innerHTML = '<div class="no-data">No hay publicaciones aún</div>'; return; }
+            c.innerHTML = '';
+            pubs.forEach(pub => {
+                const contenido = pub.contenido_json || {};
+                const mediaUrl = contenido.imagen || contenido.url || '';
+                c.innerHTML += `
+                    <div class="publicacion">
+                        <div class="pub-header">
+                            <h3>${pub.titulo || 'Sin título'}</h3>
+                            <small>${pub.barbero?.nombre || 'Barbero'} · ${new Date(pub.createdAt).toLocaleDateString('es-CO')}</small>
+                        </div>
+                        ${pub.descripcion ? `<div class="pub-desc">${pub.descripcion}</div>` : ''}
+                        ${mediaUrl ? `<img src="${mediaUrl}" alt="Media" class="pub-media" onclick="abrirMedia('${mediaUrl.replace(/'/g, "\\'")}')">` : ''}
+                        <div class="pub-actions">
+                            <button class="${usuarioId && pub.user_reaction === 'like' ? 'liked' : ''}" onclick="agregarReaccion(${pub.id}, 'like')">👍 ${pub.likes_count || 0}</button>
+                            <button class="${usuarioId && pub.user_reaction === 'dislike' ? 'liked' : ''}" onclick="agregarReaccion(${pub.id}, 'dislike')">👎 ${pub.dislikes_count || 0}</button>
+                        </div>
+                        <div class="comentarios">
+                            ${(pub.comentarios || []).map(com => `
+                                <div class="comentario">
+                                    <div class="comentario-user">
+                                        ${com.usuario?.nombre || 'Anónimo'}
+                                        ${com.usuario_id === usuarioId ? `<span class="comentario-delete" onclick="eliminarComentario(${com.id})">eliminar</span>` : ''}
+                                    </div>
+                                    <div class="comentario-texto">${com.texto}</div>
+                                </div>
+                            `).join('')}
+                            <div class="comentario-input">
+                                <input type="text" id="comentario-input-${pub.id}" placeholder="Escribe un comentario..." />
+                                <button onclick="agregarComentario(${pub.id})">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        } catch(e) { document.getElementById('publicaciones-container').innerHTML = '<div class="no-data">Error al cargar</div>'; }
+    }
+
+    async function agregarReaccion(pubId, tipo) {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch('/api/publicaciones/' + pubId + '/reacciones', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ tipo })
+            });
+            if (res.ok) cargarPublicaciones();
+        } catch(e) { console.error(e); }
+    }
+
+    async function agregarComentario(pubId) {
+        const input = document.getElementById('comentario-input-' + pubId);
+        const texto = input.value.trim();
+        if (!texto) return;
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch('/api/publicaciones/' + pubId + '/comentarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ texto })
+            });
+            if (res.ok) { input.value = ''; cargarPublicaciones(); }
+        } catch(e) { console.error(e); }
+    }
+
+    async function eliminarComentario(comId) {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch('/api/publicaciones/comentarios/' + comId, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.ok) cargarPublicaciones();
+        } catch(e) { console.error(e); }
+    }
 </script>
 </body>
 </html>
