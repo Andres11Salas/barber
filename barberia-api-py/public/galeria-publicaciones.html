@@ -3,480 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galería de Publicaciones - Barbería</title>
+    <title>Galería - Barbería VIP</title>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --brand-blue: #1f618d;
-            --brand-light-blue: #3498db;
-            --brand-red: #c0392b;
-            --muted: #7f8c8d;
+            --accent: #c9a84c;
+            --accent-light: #e8c65a;
+            --gold-gradient: linear-gradient(135deg, #c9a84c, #e8c65a, #c9a84c);
+            --bg-dark: #111;
+            --bg-card: #1a1a1a;
+            --text-light: #f0f0f0;
+            --text-muted: #999;
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(180deg, #fafbfd 0%, #f4f6f8 100%);
-            color: #222;
-            margin: 0;
-            padding: 0;
+            background: var(--bg-dark);
+            color: var(--text-light);
         }
 
         .header {
-            background: var(--brand-blue);
-            color: white;
-            padding: 15px 30px;
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+            padding: 12px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 2px solid var(--accent);
             position: sticky;
             top: 0;
-            z-index: 20;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 100;
         }
-
         .header h1 {
-            margin: 0;
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header a { text-decoration: none; }
+        .btn {
+            padding: 8px 16px; border: none; border-radius: 6px;
+            cursor: pointer; font-weight: 600; transition: 0.3s; font-size: 13px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-primary { background: var(--gold-gradient); color: #000; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(201,168,76,0.3); }
+        .btn-danger { background: #c0392b; color: white; }
+        .btn-danger:hover { background: #a93226; }
+        .btn-small { padding: 5px 10px; font-size: 11px; }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 25px 15px; }
+        h2 {
+            font-family: 'Oswald', sans-serif;
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             font-size: 20px;
         }
 
-        .header a {
-            color: white;
-            text-decoration: none;
-        }
-
-        .btn {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: 0.2s;
-        }
-
-        .btn-danger {
-            background: var(--brand-red);
-            color: white;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        h2 {
-            color: var(--brand-blue);
-            border-bottom: 2px solid var(--brand-light-blue);
-            padding-bottom: 10px;
-        }
-
-        /* Publicaciones */
-        .publicaciones-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
-        }
-
-        .publicacion-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        .publicacion {
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid rgba(201,168,76,0.1);
+            margin-bottom: 20px;
             overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
         }
-
-        .publicacion-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-        }
-
-        .publicacion-header {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
+        .pub-header {
+            padding: 14px 16px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            border-bottom: 1px solid #222;
         }
-
-        .barbero-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--brand-light-blue);
-            color: white;
+        .pub-header h3 { font-family: 'Oswald', sans-serif; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; font-size: 15px; }
+        .pub-header small { color: #555; font-size: 11px; }
+        .pub-desc { padding: 0 16px 10px; color: #ccc; font-size: 14px; }
+        .pub-media { width: 100%; max-height: 500px; object-fit: cover; cursor: pointer; transition: 0.3s; display: block; }
+        .pub-media:hover { opacity: 0.9; }
+        .pub-actions {
+            padding: 10px 16px;
             display: flex;
+            gap: 12px;
             align-items: center;
-            justify-content: center;
-            font-weight: 700;
+            border-top: 1px solid #222;
         }
-
-        .barbero-info h3 {
-            margin: 0;
-            color: var(--brand-blue);
-            font-size: 15px;
+        .pub-actions button {
+            background: none; border: none;
+            color: #888; cursor: pointer; font-size: 15px;
+            transition: 0.2s; display: flex; align-items: center; gap: 4px;
         }
+        .pub-actions button:hover { color: var(--accent); }
+        .pub-actions .liked { color: var(--accent); }
 
-        .barbero-info p {
-            margin: 0;
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .publicacion-contenido {
-            padding: 15px;
-            min-height: 200px;
-            background: #f9fafb;
-        }
-
-        .publicacion-titulo {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--brand-blue);
-            margin: 0 0 10px 0;
-        }
-
-        .publicacion-desc {
-            color: #555;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .publicacion-imagenes {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            margin: 10px 0;
-        }
-
-        .publicacion-imagenes img,
-        .publicacion-imagenes video {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .publicacion-footer {
-            padding: 15px;
-            border-top: 1px solid #eee;
-        }
-
-        .reacciones {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .reaccion-btn {
-            background: none;
-            border: 1px solid #ddd;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: 0.2s;
-        }
-
-        .reaccion-btn:hover {
-            background: #f0f0f0;
-        }
-
-        .reaccion-btn.active {
-            background: var(--brand-light-blue);
-            color: white;
-            border-color: var(--brand-light-blue);
-        }
-
-        .reaccion-btn.dislike {
-            color: var(--brand-red);
-        }
-
-        .reaccion-btn.dislike.active {
-            background: var(--brand-red);
-            color: white;
-            border-color: var(--brand-red);
-        }
-
-        .comentarios-seccion {
-            margin-top: 10px;
-            border-top: 1px solid #eee;
-            padding-top: 10px;
-        }
-
-        .comentarios-lista {
-            max-height: 250px;
-            overflow-y: auto;
-            margin: 10px 0;
-        }
-
-        .comentario {
-            background: #fafafa;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            font-size: 13px;
-        }
-
-        .comentario-user {
-            font-weight: 700;
-            color: var(--brand-blue);
-            margin-bottom: 4px;
-        }
-
-        .comentario-texto {
-            color: #555;
-            line-height: 1.4;
-        }
-
-        .comentario-delete {
-            font-size: 10px;
-            color: var(--brand-red);
-            cursor: pointer;
-            margin-left: 5px;
-        }
-
-        .comentario-input {
-            display: flex;
-            gap: 6px;
-        }
-
+        .comentarios { padding: 0 16px 14px; }
+        .comentario { padding: 6px 0; border-bottom: 1px solid #1a1a1a; font-size: 13px; }
+        .comentario-user { color: var(--accent); font-weight: 600; font-size: 12px; display: flex; justify-content: space-between; }
+        .comentario-delete { color: #c0392b; cursor: pointer; font-size: 11px; }
+        .comentario-texto { color: #ccc; margin-top: 2px; }
+        .comentario-input { display: flex; gap: 8px; margin-top: 8px; }
         .comentario-input input {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 13px;
+            flex: 1; padding: 8px; border: 1px solid #333; border-radius: 5px;
+            background: #222; color: #f0f0f0; font-size: 13px;
         }
-
+        .comentario-input input:focus { border-color: var(--accent); outline: none; }
         .comentario-input button {
-            padding: 8px 12px;
-            background: var(--brand-light-blue);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 700;
+            padding: 8px 14px; background: var(--gold-gradient); color: #000;
+            border: none; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 12px;
         }
 
-        .no-data {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--muted);
-        }
+        .no-data { text-align: center; padding: 40px; color: #666; }
 
         .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 200; justify-content: center; align-items: center;
         }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 10px;
-            max-width: 700px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
+        .modal.active { display: flex; }
+        .modal img { max-width: 90%; max-height: 90%; border-radius: 8px; }
         .modal-close {
-            float: right;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--muted);
+            position: absolute; top: 20px; right: 30px;
+            color: white; font-size: 36px; cursor: pointer; transition: 0.3s;
+        }
+        .modal-close:hover { color: var(--accent); }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; gap: 8px; text-align: center; }
+            .header h1 { font-size: 18px; }
+            .pub-actions { flex-wrap: wrap; }
         }
     </style>
-    <link rel="stylesheet" href="styles/dashboard.css">
 </head>
 <body>
 
 <div class="header">
-    <a href="/dashboard-cliente.html" style="text-decoration: none; color: white;">
-        <h1>💈 Galería de Publicaciones</h1>
-    </a>
+    <a href="/" class="header"><h1>✂️ Barbería VIP</h1></a>
     <div>
-        <span id="nombre-usuario" style="margin-right: 15px;"></span>
-        <button class="btn btn-danger" onclick="cerrarSesion()">Salir</button>
+        <a href="/dashboard-cliente.html" class="btn btn-primary btn-small">Volver</a>
+        <button class="btn btn-danger btn-small" onclick="cerrarSesion()">Salir</button>
     </div>
 </div>
 
 <div class="container">
-    <h2>✨ Conoce a nuestros Barberos</h2>
-    <div id="publicaciones-container" class="publicaciones-grid">
-        <div class="no-data">Cargando publicaciones...</div>
-    </div>
+    <h2>📸 Galería de Trabajos</h2>
+    <div id="publicaciones-container"><div class="no-data">Cargando...</div></div>
 </div>
 
-<!-- Modal para imagen/video grande -->
-<div id="media-modal" class="modal" onclick="if(event.target===this) cerrarModal()">
-    <div class="modal-content" style="max-width: 90%; background: black; border-radius: 0;">
-        <span class="modal-close" onclick="cerrarModal()">✕</span>
-        <img id="modal-media" src="" alt="" style="width: 100%; height: auto; display: block;">
-    </div>
+<div id="media-modal" class="modal" onclick="cerrarModal()">
+    <span class="modal-close">&times;</span>
+    <img id="modal-media" src="" alt="Media">
 </div>
 
 <script>
     let usuarioId = null;
-    let usuarioNombre = '';
 
     window.onload = () => {
         const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = '/';
-            return;
-        }
-
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        usuarioId = payload.id;
-        usuarioNombre = localStorage.getItem('nombre') || 'Usuario';
-        document.getElementById('nombre-usuario').innerText = `Hola, ${usuarioNombre}`;
-
+        if (!token) { window.location.href = '/'; return; }
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            usuarioId = payload.id || payload.user_id;
+        } catch(e) { window.location.href = '/'; return; }
         cargarPublicaciones();
-        // Auto-refresh cada 15 segundos
-        setInterval(cargarPublicaciones, 15000);
-        window.addEventListener('focus', cargarPublicaciones);
     };
+
+    function cerrarSesion() { localStorage.clear(); window.location.href = '/'; }
 
     async function cargarPublicaciones() {
         try {
             const res = await fetch('/api/publicaciones');
-            const publicaciones = await res.json();
-            const container = document.getElementById('publicaciones-container');
-
-            if (publicaciones.length === 0) {
-                container.innerHTML = '<div class="no-data">Aún no hay publicaciones. ¡Vuelve pronto!</div>';
-                return;
+            const pubs = await res.json();
+            const c = document.getElementById('publicaciones-container');
+            if (!pubs || pubs.length === 0) {
+                c.innerHTML = '<div class="no-data">No hay publicaciones aún</div>'; return;
             }
-
-            container.innerHTML = '';
-            publicaciones.forEach(pub => {
-                const miReaccion = pub.reacciones.find(r => r.usuario_id === usuarioId);
-                const html = `
-                    <div class="publicacion-card">
-                        <div class="publicacion-header">
-                            <div class="barbero-avatar">${pub.barbero.nombre.charAt(0).toUpperCase()}</div>
-                            <div class="barbero-info">
-                                <h3><a href="perfil-barbero.html?id=${pub.barbero.id}" style="color: var(--brand-blue); text-decoration: none;">${pub.barbero.nombre}</a></h3>
-                                <p>${new Date(pub.createdAt).toLocaleDateString('es-MX')}</p>
-                            </div>
+            c.innerHTML = '';
+            pubs.forEach(pub => {
+                const contenido = pub.contenido_json || {};
+                const mediaUrl = contenido.imagen || contenido.url || '';
+                const likes = pub.likes_count || 0;
+                const dislikes = pub.dislikes_count || 0;
+                c.innerHTML += `
+                    <div class="publicacion">
+                        <div class="pub-header">
+                            <h3>${pub.titulo || 'Sin título'}</h3>
+                            <small>${pub.barbero?.nombre || 'Barbero'} · ${new Date(pub.createdAt).toLocaleDateString('es-CO')}</small>
                         </div>
-                        <div class="publicacion-contenido">
-                            <h4 class="publicacion-titulo">${pub.titulo}</h4>
-                            <p class="publicacion-desc">${pub.descripcion}</p>
-                            <div class="publicacion-imagenes">
-                                ${pub.contenido_json?.imagenes ? pub.contenido_json.imagenes.map(img => 
-                                    `<img src="${img}" alt="publicacion" onclick="abrirMedia('${img}')">`
-                                ).join('') : ''}
-                                ${pub.contenido_json?.videos ? pub.contenido_json.videos.map(vid => 
-                                    `<video style="cursor: pointer;" onclick="abrirMedia('${vid}')"><source src="${vid}"></video>`
-                                ).join('') : ''}
-                            </div>
+                        ${pub.descripcion ? `<div class="pub-desc">${pub.descripcion}</div>` : ''}
+                        ${mediaUrl ? `<img src="${mediaUrl}" alt="Media" class="pub-media" onclick="abrirMedia('${mediaUrl.replace(/'/g, "\\'")}')">` : ''}
+                        <div class="pub-actions">
+                            <button class="${usuarioId && pub.user_reaction === 'like' ? 'liked' : ''}" onclick="agregarReaccion(${pub.id}, 'like')">👍 ${likes}</button>
+                            <button class="${usuarioId && pub.user_reaction === 'dislike' ? 'liked' : ''}" onclick="agregarReaccion(${pub.id}, 'dislike')">👎 ${dislikes}</button>
                         </div>
-                        <div class="publicacion-footer">
-                            <div class="reacciones">
-                                <button class="reaccion-btn ${miReaccion?.tipo === 'like' ? 'active' : ''}" onclick="agregarReaccion(${pub.id}, 'like')">
-                                    👍 Like <span>(${pub.likes_count})</span>
-                                </button>
-                                <button class="reaccion-btn dislike ${miReaccion?.tipo === 'dislike' ? 'active' : ''}" onclick="agregarReaccion(${pub.id}, 'dislike')">
-                                    👎 Dislike <span>(${pub.dislikes_count})</span>
-                                </button>
-                            </div>
-                            <div class="comentarios-seccion">
-                                <strong style="font-size: 13px;">Comentarios (${pub.comentarios.length})</strong>
-                                <div class="comentarios-lista">
-                                    ${pub.comentarios.map(com => `
-                                        <div class="comentario">
-                                            <div class="comentario-user">
-                                                ${com.usuario.nombre}
-                                                ${com.usuario_id === usuarioId ? `<span class="comentario-delete" onclick="eliminarComentario(${com.id})">eliminar</span>` : ''}
-                                            </div>
-                                            <div class="comentario-texto">${com.texto}</div>
-                                        </div>
-                                    `).join('')}
+                        <div class="comentarios">
+                            ${(pub.comentarios || []).map(com => `
+                                <div class="comentario">
+                                    <div class="comentario-user">
+                                        ${com.usuario?.nombre || 'Anónimo'}
+                                        ${com.usuario_id === usuarioId ? `<span class="comentario-delete" onclick="eliminarComentario(${com.id})">eliminar</span>` : ''}
+                                    </div>
+                                    <div class="comentario-texto">${com.texto}</div>
                                 </div>
-                                <div class="comentario-input">
-                                    <input type="text" id="comentario-input-${pub.id}" placeholder="Escribe un comentario..." />
-                                    <button onclick="agregarComentario(${pub.id})">Enviar</button>
-                                </div>
+                            `).join('')}
+                            <div class="comentario-input">
+                                <input type="text" id="comentario-input-${pub.id}" placeholder="Escribe un comentario..." />
+                                <button onclick="agregarComentario(${pub.id})">Enviar</button>
                             </div>
                         </div>
                     </div>
                 `;
-                container.innerHTML += html;
             });
-        } catch (error) {
-            console.error('Error cargando publicaciones:', error);
-            document.getElementById('publicaciones-container').innerHTML = '<div class="no-data">Error al cargar publicaciones</div>';
+        } catch(e) {
+            document.getElementById('publicaciones-container').innerHTML = '<div class="no-data">Error al cargar</div>';
         }
     }
 
     async function agregarReaccion(pubId, tipo) {
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`/api/publicaciones/${pubId}/reacciones`, {
+            const res = await fetch('/api/publicaciones/' + pubId + '/reacciones', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                 body: JSON.stringify({ tipo })
             });
             if (res.ok) cargarPublicaciones();
-        } catch (error) { console.error('Error:', error); }
+        } catch(e) { console.error(e); }
     }
 
     async function agregarComentario(pubId) {
-        const input = document.getElementById(`comentario-input-${pubId}`);
+        const input = document.getElementById('comentario-input-' + pubId);
         const texto = input.value.trim();
-        if (!texto) return alert('Escriba un comentario');
-
+        if (!texto) return Swal.fire({ icon: 'warning', title: 'Escribe un comentario', background: '#1a1a1a', color: '#f0f0f0' });
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`/api/publicaciones/${pubId}/comentarios`, {
+            const res = await fetch('/api/publicaciones/' + pubId + '/comentarios', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                 body: JSON.stringify({ texto })
             });
-            if (res.ok) {
-                input.value = '';
-                cargarPublicaciones();
-            }
-        } catch (error) { console.error('Error:', error); }
+            if (res.ok) { input.value = ''; cargarPublicaciones(); }
+        } catch(e) { console.error(e); }
     }
 
     async function eliminarComentario(comId) {
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`/api/publicaciones/comentarios/${comId}`, {
+            const res = await fetch('/api/publicaciones/comentarios/' + comId, {
                 method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': 'Bearer ' + token }
             });
             if (res.ok) cargarPublicaciones();
-        } catch (error) { console.error('Error:', error); }
+        } catch(e) { console.error(e); }
     }
 
     function abrirMedia(src) {
         document.getElementById('modal-media').src = src;
         document.getElementById('media-modal').classList.add('active');
     }
-
-    function cerrarModal() {
-        document.getElementById('media-modal').classList.remove('active');
-    }
-
-    function cerrarSesion() {
-        localStorage.clear();
-        window.location.href = '/';
-    }
+    function cerrarModal() { document.getElementById('media-modal').classList.remove('active'); }
 </script>
 
 </body>
