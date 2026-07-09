@@ -272,7 +272,7 @@
                 const res=await fetch('/api/citas/'+id,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
                     body:JSON.stringify(form)});
                 if(res.ok){await Swal.fire({icon:'success',title:'Actualizada',timer:1500,background:'#1a1a1a',color:'#f0f0f0'});cargarCitas();}
-                else{const d=await res.json();if(await manejarErrorAuth(d))return;await Swal.fire({icon:'error',title:'Error',text:d.error||d.detail||JSON.stringify(d),background:'#1a1a1a',color:'#f0f0f0'});}
+                else{const d=await res.json();if(await manejarErrorAuth(d,res))return;await Swal.fire({icon:'error',title:'Error',text:d.error||d.detail||JSON.stringify(d),background:'#1a1a1a',color:'#f0f0f0'});}
             }catch(e){}
         }catch(e){}
     }
@@ -394,27 +394,31 @@
             });
             if(r.ok){
                 const nueva = await r.json();
-                mostrarSeccion('citas',document.querySelector('.tab-btn:nth-child(4)'));
-                cargarCitas();
+                const total = await (async()=>{let t=parseFloat(nueva.servicio?.precio||0);if(nueva.servicios_adicionales) nueva.servicios_adicionales.forEach(s=>t+=parseFloat(s.precio||0));return t.toFixed(2);})();
                 const {isConfirmed: pagarAhora} = await Swal.fire({
                     icon:'success',title:'Cita agendada con exito',
-                    html:`<p style="margin:8px 0;color:#ccc;">${nueva.servicios_nombres||''}</p><p style="font-size:22px;font-weight:700;color:var(--accent);">$${await (async()=>{let t=parseFloat(nueva.servicio?.precio||0);if(nueva.servicios_adicionales) nueva.servicios_adicionales.forEach(s=>t+=parseFloat(s.precio||0));return t.toFixed(2);})()}</p>`,
-                    showCancelButton:true,confirmButtonText:'Pagar ahora',cancelButtonText:'Despues',background:'#1a1a1a',color:'#f0f0f0'
+                    html:`<div style="margin-bottom:12px;">✅ <strong style="color:var(--accent);">${nueva.servicios_nombres||'Cita'}</strong></div>
+                    <div style="font-size:14px;color:#ccc;">📅 ${nueva.fecha} a las ${nueva.hora}</div>
+                    <div style="font-size:14px;color:#ccc;">💈 Barbero: ${nueva.barbero_nombre||''}</div>
+                    <div style="margin-top:12px;font-size:20px;font-weight:700;color:var(--accent);">Total: $${total}</div>`,
+                    showCancelButton:true,confirmButtonText:'💳 Pagar ahora',cancelButtonText:'✅ Ver mis citas',background:'#1a1a1a',color:'#f0f0f0'
                 });
+                mostrarSeccion('citas',document.querySelector('.tab-btn:nth-child(4)'));
+                cargarCitas();
                 if(pagarAhora) pagarCita(nueva.id);
             } else {
                 const d = await r.json();
-                if(await manejarErrorAuth(d)) return;
-                await Swal.fire({icon:'error',title:'Error',text:d.error||d.detail||JSON.stringify(d),background:'#1a1a1a',color:'#f0f0f0'});
+                if(await manejarErrorAuth(d,r)) return;
+                await Swal.fire({icon:'error',title:'Error al agendar',text:d.error||d.detail||'Ocurrio un error al crear la cita. Intenta de nuevo.',background:'#1a1a1a',color:'#f0f0f0'});
             }
         }catch(e){ await Swal.fire({icon:'error',title:'Error de conexion',background:'#1a1a1a',color:'#f0f0f0'}); }
     }
-    async function manejarErrorAuth(d){
+    async function manejarErrorAuth(d, res){
         if(!d) return false;
-        const esTokenError = (d.detail||'').includes('token') || d.code==='token_not_valid';
-        if(!esTokenError) return false;
+        if(!res || res.status!==401) return false;
         const ok = await refrescarToken();
-        if(ok) return false;
+        if(ok){ window.location.reload(); return true; }
+        await Swal.fire({icon:'warning',title:'Sesion expirada',text:'Tu sesion ha expirado. Vuelve a iniciar sesion.',confirmButtonText:'OK',background:'#1a1a1a',color:'#f0f0f0'});
         localStorage.clear();
         window.location.href='/';
         return true;
@@ -428,7 +432,7 @@
             });
             Swal.close();
             const d = await r.json();
-            if(await manejarErrorAuth(d)) return;
+            if(await manejarErrorAuth(d,r)) return;
             if(d.url_pago || d.init_point){
                 const link = d.url_pago || d.init_point;
                 window.open(link,'_blank');
