@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from apps.usuarios.models import Usuario
 from .serializers import (
     LoginSerializer, RegistroSerializer,
@@ -30,10 +30,12 @@ def login(request):
 
     token = AccessToken.for_user(usuario)
     token['rol'] = usuario.rol
+    refresh = RefreshToken.for_user(usuario)
 
     return Response({
         'mensaje': f'Bienvenido {usuario.nombre}',
         'token': str(token),
+        'refresh': str(refresh),
         'rol': usuario.rol,
     })
 
@@ -126,10 +128,12 @@ def google_register(request):
 
     token = AccessToken.for_user(usuario)
     token['rol'] = usuario.rol
+    refresh = RefreshToken.for_user(usuario)
 
     return Response({
         'mensaje': mensaje,
         'token': str(token),
+        'refresh': str(refresh),
         'rol': usuario.rol,
         'nombre': usuario.nombre,
     })

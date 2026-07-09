@@ -12,23 +12,35 @@ from .models import Pago
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def crear_preferencia_pago(request):
-    cita_id = request.data.get('citaId')
-    monto = request.data.get('monto')
-    descripcion = request.data.get('descripcion', 'Corte de Cabello / Servicio de Barbería')
+    cita_id = request.data.get('cita_id') or request.data.get('citaId')
 
-    if not cita_id or not monto:
+    if not cita_id:
         return Response(
-            {'error': 'citaId y monto son requeridos'},
+            {'error': 'cita_id es requerido'},
             status=status.HTTP_400_BAD_REQUEST
         )
 
     try:
-        cita = Cita.objects.get(id=cita_id)
+        cita = Cita.objects.select_related('servicio').prefetch_related('servicios_adicionales').get(id=cita_id)
     except Cita.DoesNotExist:
         return Response(
             {'error': 'La cita no existe'},
             status=status.HTTP_404_NOT_FOUND
         )
+
+    if cita.cliente_id != request.user.id:
+        return Response(
+            {'error': 'No tienes permiso para pagar esta cita'},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    monto = float(cita.servicio.precio)
+    nombres = [cita.servicio.nombre]
+    for s in cita.servicios_adicionales.all():
+        monto += float(s.precio)
+        nombres.append(s.nombre)
+
+    descripcion = ', '.join(nombres)
 
     nuevo_pago = Pago.objects.create(cita=cita, monto=monto)
 
@@ -40,7 +52,7 @@ def crear_preferencia_pago(request):
                 'id': str(nuevo_pago.id),
                 'title': descripcion,
                 'quantity': 1,
-                'unit_price': float(monto),
+                'unit_price': monto,
             }
         ],
         'back_urls': {
@@ -59,7 +71,13 @@ def crear_preferencia_pago(request):
         preference = result['response']
         nuevo_pago.preference_id = preference['id']
         nuevo_pago.save()
-        return Response({'url_pago': preference['init_point'], 'preference_id': preference['id']})
+        return Response({
+            'url_pago': preference['init_point'],
+            'init_point': preference['init_point'],
+            'preference_id': preference['id'],
+            'monto': monto,
+            'descripcion': descripcion,
+        })
     else:
         nuevo_pago.estado = 'RECHAZADO'
         nuevo_pago.save()

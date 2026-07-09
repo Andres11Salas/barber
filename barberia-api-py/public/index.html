@@ -687,6 +687,7 @@
             const data = await res.json();
             if (res.ok) {
                 localStorage.setItem('token', data.token);
+                localStorage.setItem('refresh', data.refresh||'');
                 localStorage.setItem('rol', data.rol);
                 localStorage.setItem('nombre', data.nombre);
                 await Swal.fire({ icon: 'success', title: data.mensaje, timer: 2000, showConfirmButton: false, background: '#1a1a1a', color: '#f0f0f0' });
@@ -732,6 +733,7 @@
         body: () => ({ email: document.getElementById('login-email').value, password: document.getElementById('login-password').value }),
         onSuccess: (data) => {
             localStorage.setItem('token', data.token);
+            localStorage.setItem('refresh', data.refresh||'');
             localStorage.setItem('rol', data.rol);
             localStorage.setItem('nombre', data.mensaje.replace('Bienvenido ', ''));
             Swal.fire({ icon: 'success', title: data.mensaje, timer: 1500, showConfirmButton: false, background: '#1a1a1a', color: '#f0f0f0' }).then(() => {

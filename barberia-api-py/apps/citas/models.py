@@ -19,8 +19,13 @@ class Cita(models.Model):
     )
     servicio = models.ForeignKey(
         'servicios.Servicio', on_delete=models.CASCADE,
-        related_name='citas', db_column='servicio_id'
+        related_name='citas_principales', db_column='servicio_id'
     )
+    servicios_adicionales = models.ManyToManyField(
+        'servicios.Servicio', blank=True,
+        related_name='citas_adicionales'
+    )
+    duracion_total = models.IntegerField(default=30)
     fecha = models.DateField()
     hora = models.TimeField()
     estado = models.CharField(max_length=20, choices=ESTADOS, default='PENDIENTE')

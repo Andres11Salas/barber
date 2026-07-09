@@ -3,290 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barbería - Mi Panel de Barbero</title>
+    <title>Barbero - Barbería VIP</title>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: transparent; margin: 0; padding: 20px; }
-        .container { max-width: 1100px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(0,0,0,0.04); padding-bottom: 10px; margin-bottom: 20px; }
-
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { padding: 10px 20px; border: none; background-color: #ecf0f1; cursor: pointer; border-radius: 6px; font-weight: 700; transition: 0.18s; }
-        .tab-btn:hover { background-color: #f1f4f7; }
-        .tab-btn.active { background-color: var(--brand-blue); color: white; }
-
+        :root {
+            --accent: #c9a84c;
+            --accent-light: #e8c65a;
+            --gold-gradient: linear-gradient(135deg, #c9a84c, #e8c65a, #c9a84c);
+            --bg-dark: #111;
+            --bg-card: #1a1a1a;
+            --text-light: #f0f0f0;
+            --text-muted: #999;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-dark); color: var(--text-light); }
+        .header { background: linear-gradient(180deg,#0a0a0a 0%,#1a1a2e 100%); padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
+        .header h1 { font-family: 'Playfair Display', serif; font-size: 22px; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tabs-container { background: #0a0a0a; border-bottom: 1px solid #222; padding: 0 15px; display: flex; gap: 3px; position: sticky; top: 56px; z-index: 99; overflow-x: auto; }
+        .tab-btn { padding: 12px 16px; border: none; background: none; cursor: pointer; font-weight: 600; color: #666; border-bottom: 3px solid transparent; transition: 0.2s; font-size: 14px; white-space: nowrap; text-transform: uppercase; letter-spacing: 1px; }
+        .tab-btn:hover { color: var(--accent); }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 25px 15px; }
         .section { display: none; }
-        .section.active { display: block; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background-color: var(--brand-blue); color: white; }
-
-        .btn { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; color: white; font-weight: 700; }
-        .btn-primary { background-color: var(--brand-light-blue); }
-        .btn-danger { background-color: var(--brand-red); }
-        .btn-success { background-color: #27ae60; }
-        .hidden { display: none !important; }
-
-        .perfil-card { background: #fafafa; border: 1px solid #f0f0f0; padding: 20px; border-radius: 8px; max-width: 420px; }
-        input, select, textarea { width: calc(100% - 24px); padding: 10px; margin: 5px 0 15px 0; border: 1px solid #e6e6e9; border-radius: 6px; }
-        textarea { resize: vertical; min-height: 80px; }
-
-        .badge-rol{ background: var(--brand-red); color: white; padding: 6px 12px; border-radius: 16px; font-size: 13px; }
-        .field-error{ color: var(--brand-red); font-size:12px; margin-top:6px; display:block; }
-
-        .pub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
-        .pub-card { background: #f9fafb; border: 1px solid #eee; border-radius: 8px; padding: 15px; }
-        .pub-card h4 { margin: 0 0 10px 0; color: var(--brand-blue); }
-        .pub-card p { margin: 5px 0; font-size: 13px; }
+        .section.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        h2 { font-family: 'Oswald', sans-serif; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 8px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; font-size: 20px; }
+        .perfil-card { background: var(--bg-card); border-radius: 12px; padding: 25px; border: 1px solid rgba(201,168,76,0.15); max-width: 600px; }
+        .perfil-card p { margin: 8px 0; font-size: 14px; }
+        .perfil-card strong { color: var(--accent); }
+        table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 10px; overflow: hidden; border: 1px solid rgba(201,168,76,0.1); margin-top: 15px; }
+        thead { background: #0a0a0a; }
+        th { padding: 12px 15px; text-align: left; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; font-size: 12px; }
+        td { padding: 12px 15px; border-bottom: 1px solid #222; font-size: 14px; }
+        tbody tr:hover { background: rgba(201,168,76,0.05); }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.3s; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-primary { background: var(--gold-gradient); color: #000; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(201,168,76,0.3); }
+        .btn-danger { background: #c0392b; color: white; }
+        .btn-danger:hover { background: #a93226; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-warning { background: #e67e22; color: white; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .badge-adm { background: #c0392b; color: white; }
+        .badge-barbero { background: var(--accent); color: #000; }
+        .badge-cliente { background: #3498db; color: white; }
+        .pub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; margin-top: 15px; }
+        .pub-card { background: var(--bg-card); border-radius: 10px; border: 1px solid rgba(201,168,76,0.1); padding: 16px; }
+        .pub-card h4 { color: var(--accent); font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .pub-card p { color: #ccc; font-size: 13px; margin: 5px 0; }
+        .no-data { text-align: center; padding: 40px; color: #666; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #333; border-radius: 6px; background: #222; color: #f0f0f0; font-size: 14px; margin: 5px 0 12px; }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 2px rgba(201,168,76,0.15); }
+        label { display: block; font-weight: 600; margin-bottom: 3px; color: var(--accent); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+        .field-error { color: #e74c3c; font-size: 12px; margin-top: 2px; display: block; }
+        @media (max-width:768px) { .header{flex-direction:column;gap:8px;text-align:center} .tabs-container{top:90px} th,td{padding:8px 10px;font-size:12px} }
     </style>
-    <link rel="stylesheet" href="styles/dashboard.css">
 </head>
 <body>
-
+<div class="header">
+    <h1>💈 Barbería VIP</h1>
+    <div><span style="color:var(--accent);font-weight:600;font-size:14px;" id="badge-rol"></span><button class="btn btn-danger btn-small" onclick="cerrarSesion()">Salir</button></div>
+</div>
+<div class="tabs-container">
+    <button class="tab-btn active" onclick="mostrarSeccion('perfil',this)">👤 Perfil</button>
+    <button class="tab-btn" onclick="mostrarSeccion('citas',this)">📅 Mis Citas</button>
+    <button class="tab-btn" onclick="mostrarSeccion('publicaciones',this)">📸 Publicaciones</button>
+</div>
 <div class="container">
-    <div class="header">
-        <a href="/" style="text-decoration: none; color: #2c3e50;"><h1>💈 Mi Panel de Barbero</h1></a>
-        <div>
-            <span id="badge-rol" class="badge-rol" style="margin-right: 15px;"></span>
-            <button class="btn btn-danger" onclick="cerrarSesion()">Salir</button>
-        </div>
-    </div>
-    
-    <div class="tabs">
-        <button class="tab-btn active" onclick="mostrarSeccion('perfil')">👤 Mi Perfil</button>
-        <button class="tab-btn" onclick="mostrarSeccion('citas')">📅 Mis Citas</button>
-        <button class="tab-btn" onclick="mostrarSeccion('publicaciones')">📸 Mis Publicaciones</button>
-    </div>
-
-    <!-- SECCIÓN: MI PERFIL -->
     <div id="sec-perfil" class="section active">
-        <h2>Información de tu Cuenta</h2>
+        <h2>👤 Mi Perfil</h2>
         <div class="perfil-card">
-            <p><strong>ID de Empleado:</strong> <span id="perfil-id">...</span></p>
-            <p><strong>Nombre:</strong> <span id="perfil-nombre">...</span></p>
-            <p><strong>Correo:</strong> <span id="perfil-email">...</span></p>
-            <p><strong>Rol en el sistema:</strong> <span id="perfil-rol">...</span></p>
+            <p><strong>ID:</strong> <span id="perfil-id">-</span></p>
+            <p><strong>Nombre:</strong> <span id="perfil-nombre">-</span></p>
+            <p><strong>Email:</strong> <span id="perfil-email">-</span></p>
+            <p><strong>Rol:</strong> <span id="perfil-rol">-</span></p>
         </div>
     </div>
-
-    <!-- SECCIÓN: MIS CITAS -->
     <div id="sec-citas" class="section">
-        <h2>Mi Agenda de Citas</h2>
-        <table>
-            <thead><tr><th>Fecha y Hora</th><th>Cliente</th><th>Servicio</th><th>Precio</th></tr></thead>
-            <tbody id="tabla-citas"><tr><td colspan="4" style="text-align: center;">Cargando...</td></tr></tbody>
-        </table>
+        <h2>📅 Mi Agenda</h2>
+        <table><thead><tr><th>Fecha/Hora</th><th>Cliente</th><th>Servicio</th><th>Precio</th></tr></thead><tbody id="tabla-citas"><tr><td colspan="4" style="text-align:center;padding:30px;color:#666;">Cargando...</td></tr></tbody></table>
     </div>
-
-    <!-- SECCIÓN: PUBLICACIONES -->
     <div id="sec-publicaciones" class="section">
-        <h2>Mis Publicaciones</h2>
-        
-        <!-- Formulario para crear publicación -->
-        <div style="background:#f8fafc;padding:15px;border-radius:8px;margin-bottom:20px;">
-            <h3 style="margin-top: 0;">Crear Nueva Publicación</h3>
-            
-            <label><strong>Título</strong></label>
-            <input type="text" id="pub-titulo" placeholder="Ej: Mi último corte modernista" />
-            <span class="field-error" id="err-pub-titulo"></span>
-
-            <label><strong>Descripción</strong></label>
-            <textarea id="pub-descripcion" placeholder="Cuéntales sobre este trabajo..."></textarea>
-            <span class="field-error" id="err-pub-descripcion"></span>
-
-            <label><strong>Fotos (URLs separadas por coma)</strong></label>
-            <input type="text" id="pub-imagenes" placeholder="https://imagen1.jpg,https://imagen2.jpg" />
-            <span class="field-error" id="err-pub-imagenes"></span>
-
-            <label><strong>Videos (URLs separadas por coma)</strong></label>
-            <input type="text" id="pub-videos" placeholder="https://video1.mp4,https://video2.webm" />
-
-            <button class="btn btn-primary" onclick="crearPublicacion()" style="width: auto;">📤 Publicar</button>
+        <h2>📸 Mis Publicaciones</h2>
+        <div style="background:var(--bg-card);border-radius:10px;padding:18px;border:1px solid rgba(201,168,76,0.1);margin-bottom:20px;">
+            <h3 style="color:var(--accent);margin-bottom:15px;">Crear Publicación</h3>
+            <label>Título</label><input type="text" id="pub-titulo"><span class="field-error" id="err-pub-titulo"></span>
+            <label>Descripción</label><textarea id="pub-descripcion" rows="3"></textarea><span class="field-error" id="err-pub-descripcion"></span>
+            <label>URL de imagen</label><input type="url" id="pub-imagen" placeholder="https://ejemplo.com/foto.jpg">
+            <button class="btn btn-primary" onclick="crearPublicacion()">📤 Publicar</button>
         </div>
-
-        <h3>Mis trabajos publicados</h3>
-        <div id="publicaciones-container" class="pub-grid">
-            <div style="text-align: center; color: #999; padding: 20px;">Cargando publicaciones...</div>
-        </div>
+        <div id="publicaciones-container" class="pub-grid"><div class="no-data">Cargando...</div></div>
     </div>
 </div>
-
 <script>
-    let miToken = localStorage.getItem('token');
-    let miRol = localStorage.getItem('rol');
-    let miId = null;
-
+    let miId = null, token = localStorage.getItem('token'), rol = localStorage.getItem('rol'), refreshToken = localStorage.getItem('refresh');
+    async function refrescarToken(){
+        if(!refreshToken) return false;
+        try{
+            const r = await fetch('/api/auth/refresh',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refresh:refreshToken})});
+            if(!r.ok) return false;
+            const d = await r.json();
+            token = d.access; localStorage.setItem('token',token);
+            refreshToken = d.refresh||refreshToken; localStorage.setItem('refresh',refreshToken);
+            return true;
+        }catch(e){ return false; }
+    }
     window.onload = () => {
-        if (!miToken || miRol !== 'BARBERO') {
-            window.location.href = '/'; 
-            return;
-        }
-
-        document.getElementById('badge-rol').innerText = 'Modo: ' + miRol;
-        const payload = JSON.parse(atob(miToken.split('.')[1]));
-        miId = payload.id;
-
-        cargarPerfil();
-        cargarCitas();
-        cargarPublicaciones();
+        if (!token || rol !== 'BARBERO') { window.location.href = '/'; return; }
+        document.getElementById('badge-rol').innerText = '👤 ' + rol;
+        const p = JSON.parse(atob(token.split('.')[1])); miId = p.id || p.user_id;
+        cargarPerfil(); cargarCitas(); cargarPublicaciones();
+        setInterval(refrescarToken,55*60*1000);
     };
-
-    function mostrarSeccion(seccionId) {
-        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById('sec-' + seccionId).classList.add('active');
-        event.target.classList.add('active');
+    function mostrarSeccion(s,btn){
+        document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+        document.getElementById('sec-'+s).classList.add('active');
+        if(btn) btn.classList.add('active');
+        if(s==='publicaciones') cargarPublicaciones();
     }
-
-    function cerrarSesion() {
-        localStorage.clear();
-        window.location.href = '/';
-    }
-
-    async function cargarPerfil() {
+    function cerrarSesion(){ localStorage.clear(); window.location.href='/'; }
+    async function cargarPerfil(){
         try {
-            const res = await fetch(`/api/usuarios/${miId}`);
-            const data = await res.json();
-            document.getElementById('perfil-id').innerText = data.id;
-            document.getElementById('perfil-nombre').innerText = data.nombre;
-            document.getElementById('perfil-email').innerText = data.email;
-            document.getElementById('perfil-rol').innerText = data.rol;
-        } catch (error) { console.error("Error al cargar perfil:", error); }
+            const r = await fetch('/api/usuarios/'+miId,{headers:{'Authorization':'Bearer '+token}}); const d = await r.json();
+            document.getElementById('perfil-id').innerText=d.id;
+            document.getElementById('perfil-nombre').innerText=d.nombre;
+            document.getElementById('perfil-email').innerText=d.email;
+            document.getElementById('perfil-rol').innerText=d.rol;
+        }catch(e){}
     }
-
-    async function cargarCitas() {
+    async function cargarCitas(){
         try {
-            const res = await fetch('/api/citas');
-            let citas = await res.json();
-            citas = citas.filter(cita => cita.barbero_id === miId);
-
-            const tbody = document.getElementById('tabla-citas');
-            tbody.innerHTML = '';
-            
-            if(citas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No tienes citas agendadas</td></tr>';
-                return;
-            }
-
-            citas.forEach(c => {
-                const nombreCliente = c.cliente ? c.cliente.nombre : 'Desconocido';
-                const nombreServicio = c.servicio ? c.servicio.nombre : 'Desconocido';
-                const precio = c.servicio ? c.servicio.precio : 'N/A';
-                
-                tbody.innerHTML += `<tr>
-                    <td><strong>${c.fecha}</strong> <br> ${c.hora}</td>
-                    <td>👤 ${nombreCliente}</td>
-                    <td>✂️ ${nombreServicio}</td>
-                    <td>$${precio}</td>
-                </tr>`;
+            const r = await fetch('/api/citas',{headers:{'Authorization':'Bearer '+token}}); let citas = await r.json();
+            citas = citas.filter(c=>c.barbero?.id===miId);
+            const t = document.getElementById('tabla-citas');
+            if(!citas.length){ t.innerHTML='<tr><td colspan="4" style="text-align:center;padding:30px;color:#666;">Sin citas agendadas</td></tr>'; return; }
+            t.innerHTML='';
+            citas.forEach(c=>{
+                t.innerHTML+=`<tr><td><strong>${c.fecha}</strong><br><small style="color:#666;">${c.hora}</small></td><td>👤 ${c.cliente?.nombre||'N/A'}</td><td>✂️ ${c.servicio?.nombre||'N/A'}</td><td>$${c.servicio?.precio||'N/A'}</td></tr>`;
             });
-        } catch (error) { console.error(error); }
+        }catch(e){}
     }
-
-    async function cargarPublicaciones() {
+    async function cargarPublicaciones(){
         try {
-            const res = await fetch(`/api/publicaciones/barbero/${miId}`);
-            const publicaciones = await res.json();
-            const container = document.getElementById('publicaciones-container');
-
-            if (publicaciones.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">Aún no tienes publicaciones. ¡Crea tu primera publicación!</div>';
-                return;
-            }
-
-            container.innerHTML = '';
-            publicaciones.forEach(pub => {
-                const html = `
-                    <div class="pub-card">
-                        <h4>${pub.titulo}</h4>
-                        <p>${pub.descripcion.substring(0, 100)}${pub.descripcion.length > 100 ? '...' : ''}</p>
-                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd;">
-                            <p><strong>👍 ${pub.likes_count} | 👎 ${pub.dislikes_count} | 💬 ${pub.comentarios?.length || 0}</strong></p>
-                            <button class="btn btn-primary" onclick="editarPublicacion(${pub.id})" style="width: auto; margin-right: 5px;">Editar</button>
-                            <button class="btn btn-danger" onclick="eliminarPublicacion(${pub.id})" style="width: auto;">Eliminar</button>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += html;
+            const r = await fetch('/api/publicaciones/barbero/'+miId);
+            const pubs = await r.json();
+            const c = document.getElementById('publicaciones-container');
+            if(!pubs.length){ c.innerHTML='<div class="no-data">Sin publicaciones</div>'; return; }
+            c.innerHTML='';
+            pubs.forEach(p=>{
+                const img = (p.contenido_json?.imagen||p.contenido_json?.imagenes?.[0]||'');
+                c.innerHTML+=`<div class="pub-card"><h4>${p.titulo}</h4><p>${(p.descripcion||'').substring(0,120)}</p>${img?`<img src="${img}" style="width:100%;height:120px;object-fit:cover;border-radius:6px;margin:8px 0;" loading="lazy">`:''}<div style="display:flex;gap:12px;margin-top:10px;padding-top:8px;border-top:1px solid #222;font-size:12px;color:#888;">👍 ${p.likes_count||0} | 💬 ${p.comentarios?.length||0}</div><div style="margin-top:8px;"><button class="btn btn-danger btn-small" onclick="eliminarPublicacion(${p.id})">Eliminar</button></div></div>`;
             });
-        } catch (error) { console.error(error); }
+        }catch(e){}
     }
-
-    function clearPublicationErrors(){
-        ['titulo','descripcion','imagenes'].forEach(f=>{
-            const el = document.getElementById('err-pub-'+f);
-            if(el) el.innerText = '';
-        });
-    }
-
-    function validatePublication(){
-        let ok = true;
-        const titulo = document.getElementById('pub-titulo').value.trim();
-        const descripcion = document.getElementById('pub-descripcion').value.trim();
-
-        if(!titulo){ document.getElementById('err-pub-titulo').innerText = 'El título es obligatorio.'; ok = false; }
-        if(!descripcion){ document.getElementById('err-pub-descripcion').innerText = 'La descripción es obligatoria.'; ok = false; }
-
-        return ok;
-    }
-
+    function clearPubErrors(){ ['titulo','descripcion'].forEach(f=>{const e=document.getElementById('err-pub-'+f);if(e)e.textContent='';}); }
     async function crearPublicacion(){
-        clearPublicationErrors();
-        if(!validatePublication()) return;
-
-        const titulo = document.getElementById('pub-titulo').value.trim();
-        const descripcion = document.getElementById('pub-descripcion').value.trim();
-        const imagenesStr = document.getElementById('pub-imagenes').value.trim();
-        const videosStr = document.getElementById('pub-videos').value.trim();
-
-        const contenido_json = {};
-        if(imagenesStr) contenido_json.imagenes = imagenesStr.split(',').map(s => s.trim()).filter(s => s);
-        if(videosStr) contenido_json.videos = videosStr.split(',').map(s => s.trim()).filter(s => s);
-
+        clearPubErrors(); let ok=true;
+        const titulo=document.getElementById('pub-titulo').value.trim();
+        const descripcion=document.getElementById('pub-descripcion').value.trim();
+        const imagen=document.getElementById('pub-imagen').value.trim();
+        if(!titulo){document.getElementById('err-pub-titulo').textContent='El título es obligatorio.';ok=false}
+        if(!descripcion){document.getElementById('err-pub-descripcion').textContent='La descripción es obligatoria.';ok=false}
+        if(!ok) return;
         try {
-            const res = await fetch('/api/publicaciones', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${miToken}` },
-                body: JSON.stringify({ titulo, descripcion, contenido_json })
+            const r = await fetch('/api/publicaciones',{
+                method:'POST',
+                headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+                body:JSON.stringify({titulo,descripcion,contenido_json:{imagen}})
             });
-
-            if(res.ok){
-                alert('¡Publicación creada exitosamente!');
-                document.getElementById('pub-titulo').value = '';
-                document.getElementById('pub-descripcion').value = '';
-                document.getElementById('pub-imagenes').value = '';
-                document.getElementById('pub-videos').value = '';
+            if(r.ok){
+                await Swal.fire({icon:'success',title:'Publicación creada',timer:1500,showConfirmButton:false,background:'#1a1a1a',color:'#f0f0f0'});
+                document.getElementById('pub-titulo').value=''; document.getElementById('pub-descripcion').value=''; document.getElementById('pub-imagen').value='';
                 cargarPublicaciones();
             } else {
-                const data = await res.json();
-                alert('Error: ' + (data.error || data.message || 'No se pudo crear'));
+                const d = await r.json();
+                await Swal.fire({icon:'error',title:'Error',text:d.error||d.message||'No se pudo crear',background:'#1a1a1a',color:'#f0f0f0'});
             }
-        }catch(e){ console.error(e); alert('Error al crear publicación'); }
+        }catch(e){ await Swal.fire({icon:'error',title:'Error de conexión',background:'#1a1a1a',color:'#f0f0f0'}); }
     }
-
-    function editarPublicacion(pubId){
-        alert('Funcionalidad de edición próximamente disponible');
-    }
-
-    async function eliminarPublicacion(pubId){
-        if(!confirm('¿Eliminar esta publicación? No se puede deshacer.')) return;
-        
+    async function eliminarPublicacion(id){
+        const r = await Swal.fire({title:'¿Eliminar?',icon:'warning',showCancelButton:true,confirmButtonText:'Sí',cancelButtonText:'No',background:'#1a1a1a',color:'#f0f0f0'});
+        if(!r.isConfirmed) return;
         try {
-            const res = await fetch(`/api/publicaciones/${pubId}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${miToken}` }
-            });
-
-            if(res.ok){
-                alert('Publicación eliminada');
-                cargarPublicaciones();
-            } else {
-                const data = await res.json();
-                alert('Error: ' + (data.error || data.message || 'No se pudo eliminar'));
-            }
-        }catch(e){ console.error(e); alert('Error al eliminar publicación'); }
+            const res = await fetch('/api/publicaciones/'+id,{method:'DELETE',headers:{'Authorization':'Bearer '+token}});
+            if(res.ok){ await Swal.fire({icon:'success',title:'Eliminada',timer:1500,showConfirmButton:false,background:'#1a1a1a',color:'#f0f0f0'}); cargarPublicaciones(); }
+            else { const d = await res.json(); await Swal.fire({icon:'error',title:'Error',text:d.error||d.message,background:'#1a1a1a',color:'#f0f0f0'}); }
+        }catch(e){}
     }
 </script>
-
 </body>
 </html>
