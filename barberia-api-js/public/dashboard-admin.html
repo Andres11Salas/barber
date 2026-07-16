@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbería - Panel de Staff</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: transparent; margin: 0; padding: 20px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(0,0,0,0.04); padding-bottom: 10px; margin-bottom: 20px; }
+
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 10px 20px; border: none; background-color: #ecf0f1; cursor: pointer; border-radius: 6px; font-weight: 700; transition: 0.18s; }
+        .tab-btn:hover { background-color: #f1f4f7; }
+        .tab-btn.active { background-color: var(--brand-blue); color: white; }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: var(--brand-blue); color: white; }
+
+        .btn { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; color: white; font-weight: 700; }
+        .btn-success { background-color: #27ae60; }
+        .btn-primary { background-color: var(--brand-light-blue); }
+        .btn-danger { background-color: var(--brand-red); }
+        .btn-warning { background-color: #f39c12; }
+        .hidden { display: none !important; }
+
+        .perfil-card { background: #fafafa; border: 1px solid #f0f0f0; padding: 20px; border-radius: 8px; max-width: 420px; }
+        input, select { width: calc(100% - 24px); padding: 10px; margin: 5px 0 15px 0; border: 1px solid #e6e6e9; border-radius: 6px; }
+
+        .badge-rol{ background: var(--brand-red); color: white; padding: 6px 12px; border-radius: 16px; font-size: 13px; }
+        .field-error{ color: var(--brand-red); font-size:12px; margin-top:6px; display:block; }
+    </style>
+    <link rel="stylesheet" href="styles/dashboard.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <a href="/" style="text-decoration: none; color: #2c3e50;"><h1>💈 Panel de Trabajo 💈</h1></a>
+        <div>
+            <span id="badge-rol" class="badge-rol" style="margin-right: 15px;"></span>
+            <button class="btn btn-danger" onclick="cerrarSesion()">Salir</button>
+        </div>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab-btn active" onclick="mostrarSeccion('perfil')">👤 Mi Perfil</button>
+        <button class="tab-btn" id="tab-citas" onclick="mostrarSeccion('citas')">📅 Agenda de Citas</button>
+        <button class="tab-btn admin-only" onclick="mostrarSeccion('usuarios')">👥 Gestión de Usuarios</button>
+        <button class="tab-btn admin-only" onclick="mostrarSeccion('servicios')">✂️ Servicios</button>
+    </div>
+
+    <!-- SECCIÓN: MI PERFIL -->
+    <div id="sec-perfil" class="section active">
+        <h2>Información de tu Cuenta</h2>
+        <div class="perfil-card">
+            <p><strong>ID de Empleado:</strong> <span id="perfil-id">...</span></p>
+            <p><strong>Nombre:</strong> <span id="perfil-nombre">...</span></p>
+            <p><strong>Correo:</strong> <span id="perfil-email">...</span></p>
+            <p><strong>Rol en el sistema:</strong> <span id="perfil-rol">...</span></p>
+        </div>
+    </div>
+
+    <!-- SECCIÓN: CITAS -->
+    <div id="sec-citas" class="section">
+        <h2 id="titulo-citas">Agenda de Citas</h2>
+        <table>
+            <thead><tr><th>ID</th><th>Fecha y Hora</th><th>Cliente</th><th>Barbero</th><th>Servicio</th></tr></thead>
+            <tbody id="tabla-citas"><tr><td colspan="5" style="text-align: center;">Cargando...</td></tr></tbody>
+        </table>
+    </div>
+
+    <!-- SECCIÓN: USUARIOS (CRUD COMPLETO) -->
+    <div id="sec-usuarios" class="section">
+        <h2>Directorio de Usuarios</h2>
+        
+        <!-- Formulario para Crear / Actualizar -->
+        <div style="background: #eee; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <h3 id="form-user-titulo">Añadir Nuevo Usuario</h3>
+            <input type="hidden" id="usr-id"> <!-- ID oculto para saber si estamos editando -->
+            
+            <div style="display: flex; gap: 15px;">
+                <div style="flex: 1;">
+                    <label>Nombre Completo:</label>
+                    <input type="text" id="usr-nombre" placeholder="Ej: Juan Pérez">
+                </div>
+                <div style="flex: 1;">
+                    <label>Correo Electrónico:</label>
+                    <input type="email" id="usr-email" placeholder="Ej: juan@mail.com">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <div style="flex: 1;">
+                    <label>Contraseña:</label>
+                    <input type="password" id="usr-password" placeholder="Escribe para asignar/cambiar">
+                </div>
+                <div style="flex: 1;">
+                    <label>Rol de Sistema:</label>
+                    <select id="usr-rol" style="width: 100%;">
+                        <option value="CLIENTE">Cliente</option>
+                        <option value="BARBERO">Barbero</option>
+                        <option value="ADM">Administrador</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label>Estado de la Cuenta:</label>
+                    <select id="usr-estado" style="width: 100%;">
+                        <option value="ACTIVO">Activo</option>
+                        <option value="INACTIVO">Inactivo</option>
+                        <option value="BLOQUEADO">Bloqueado</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-success" id="btn-guardar-usr" onclick="guardarUsuario()">➕ Guardar Usuario</button>
+            <button class="btn btn-warning hidden" id="btn-cancelar-usr" onclick="limpiarFormularioUsuarios()">Cancelar Edición</button>
+        </div>
+
+        <table>
+            <thead><tr><th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Acciones</th></tr></thead>
+            <tbody id="tabla-usuarios"></tbody>
+        </table>
+    </div>
+
+    <!-- SECCIÓN: SERVICIOS -->
+    <div id="sec-servicios" class="section">
+        <h2>Catálogo de Servicios</h2>
+        <div style="background:#f8fafc;padding:12px;border-radius:8px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+            <div style="flex:1;min-width:180px;">
+                <label><strong>Nombre</strong></label>
+                <input type="text" id="svc-nombre" placeholder="Ej: Corte Clásico" />
+                <span class="field-error" id="err-svc-nombre"></span>
+                <input type="hidden" id="svc-id" />
+            </div>
+            <div style="flex:2;min-width:220px;">
+                <label><strong>Descripción</strong></label>
+                <input type="text" id="svc-descripcion" placeholder="Descripción breve" />
+                <span class="field-error" id="err-svc-descripcion"></span>
+            </div>
+            <div style="width:140px;">
+                <label><strong>Precio</strong></label>
+                <input type="number" id="svc-precio" placeholder="25000" />
+                <span class="field-error" id="err-svc-precio"></span>
+            </div>
+            <div style="width:140px;">
+                <label><strong>Duración (min)</strong></label>
+                <input type="number" id="svc-duracion" placeholder="30" />
+                <span class="field-error" id="err-svc-duracion"></span>
+            </div>
+            <div style="min-width:140px; display:flex; gap:8px;">
+                <button class="btn btn-primary" id="svc-action-btn" onclick="crearServicio()">➕ Crear Servicio</button>
+                <button class="btn btn-warning hidden" id="svc-cancel-btn" onclick="cancelarEdicionServicio()">✖️ Cancelar</button>
+            </div>
+        </div>
+        <table>
+            <thead><tr><th>ID</th><th>Servicio</th><th>Precio</th><th>Duración</th></tr></thead>
+            <tbody id="tabla-servicios"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    let miToken = localStorage.getItem('token');
+    let miRol = localStorage.getItem('rol');
+    let miId = null;
+
+    window.onload = () => {
+        if (!miToken || miRol === 'CLIENTE') {
+            window.location.href = '/'; 
+            return;
+        }
+
+        document.getElementById('badge-rol').innerText = 'Modo: ' + miRol;
+        const payload = JSON.parse(atob(miToken.split('.')[1]));
+        miId = payload.id;
+
+        if (miRol === 'BARBERO') {
+            document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
+            document.getElementById('titulo-citas').innerText = 'Tus próximos turnos';
+        } else {
+            cargarUsuarios(); 
+            cargarServicios(); 
+        }
+
+        cargarPerfil();
+        cargarCitas();
+    };
+
+    function mostrarSeccion(seccionId) {
+        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('sec-' + seccionId).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    function cerrarSesion() {
+        localStorage.clear();
+        window.location.href = '/';
+    }
+
+    async function cargarPerfil() {
+        try {
+            const res = await fetch(`/api/usuarios/${miId}`);
+            const data = await res.json();
+            document.getElementById('perfil-id').innerText = data.id;
+            document.getElementById('perfil-nombre').innerText = data.nombre;
+            document.getElementById('perfil-email').innerText = data.email;
+            document.getElementById('perfil-rol').innerText = data.rol;
+        } catch (error) { console.error("Error al cargar perfil:", error); }
+    }
+
+    async function cargarCitas() {
+        try {
+            const res = await fetch('/api/citas');
+            let citas = await res.json();
+            if (miRol === 'BARBERO') citas = citas.filter(cita => cita.barbero_id === miId);
+
+            const tbody = document.getElementById('tabla-citas');
+            tbody.innerHTML = '';
+            
+            if(citas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay citas agendadas</td></tr>';
+                return;
+            }
+
+            citas.forEach(c => {
+                const nombreCliente = c.cliente ? c.cliente.nombre : 'Desconocido';
+                const nombreBarbero = c.barbero ? c.barbero.nombre : 'Desconocido';
+                const nombreServicio = c.servicio ? c.servicio.nombre : 'Desconocido';
+                
+                tbody.innerHTML += `<tr>
+                    <td>${c.id}</td>
+                    <td><strong>${c.fecha}</strong> <br> ${c.hora}</td>
+                    <td>👤 ${nombreCliente}</td>
+                    <td>💈 ${nombreBarbero}</td>
+                    <td>✂️ ${nombreServicio}</td>
+                </tr>`;
+            });
+        } catch (error) { console.error(error); }
+    }
+
+    /* ==========================================
+       CRUD DE USUARIOS (NUEVO CÓDIGO)
+       ========================================== */
+
+    // 1. LEER (GET)
+    async function cargarUsuarios() {
+        const res = await fetch('/api/usuarios');
+        const datos = await res.json();
+        const tbody = document.getElementById('tabla-usuarios');
+        tbody.innerHTML = '';
+        
+        datos.forEach(u => {
+            tbody.innerHTML += `<tr>
+                <td>${u.id}</td>
+                <td><strong>${u.nombre}</strong></td>
+                <td>${u.email}</td>
+                <td><span style="background: #34495e; color: white; padding: 3px 8px; border-radius: 10px; font-size: 12px;">${u.rol}</span></td>
+                <td>
+                    <button class="btn btn-primary" onclick="prepararEdicionUsuario(${u.id}, '${u.nombre}', '${u.email}', '${u.rol}')">✏️ Editar</button>
+                    <button class="btn btn-danger" onclick="eliminarUsuario(${u.id})">🗑️ Borrar</button>
+                </td>
+            </tr>`;
+        });
+    }
+
+    // 2. CREAR Y ACTUALIZAR (POST / PUT)
+    async function guardarUsuario() {
+        const id = document.getElementById('usr-id').value;
+        const nombre = document.getElementById('usr-nombre').value.trim();
+        const email = document.getElementById('usr-email').value.trim();
+        const password = document.getElementById('usr-password').value;
+        const rol = document.getElementById('usr-rol').value;
+
+        if (!nombre || !email) return alert('Nombre y correo son obligatorios');
+        
+        // Si no hay ID, estamos Creando. Si hay ID, estamos Actualizando.
+        const metodo = id ? 'PUT' : 'POST';
+        const url = id ? `/api/usuarios/${id}` : '/api/usuarios';
+        
+        // Armamos los datos. Si estamos editando y no escribió password, no la enviamos para que no se sobreescriba vacía
+        const estado = document.getElementById('usr-estado').value;
+        const cuerpoPeticion = { nombre, email, rol, estado };
+        if (password) cuerpoPeticion.password = password;
+
+        try {
+            const res = await fetch(url, {
+                method: metodo,
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${miToken}` 
+                },
+                body: JSON.stringify(cuerpoPeticion)
+            });
+
+            if (res.ok) {
+                alert(id ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente');
+                limpiarFormularioUsuarios();
+                cargarUsuarios();
+            } else {
+                const error = await res.json();
+                alert('Error: ' + error.error);
+            }
+        } catch (error) { console.error(error); }
+    }
+
+    // 3. PREPARAR EDICIÓN (Llena el formulario con los datos de la tabla)
+    function prepararEdicionUsuario(id, nombre, email, rol) {
+        document.getElementById('form-user-titulo').innerText = '✏️ Editando Usuario ID: ' + id;
+        document.getElementById('usr-id').value = id;
+        document.getElementById('usr-nombre').value = nombre;
+        document.getElementById('usr-email').value = email;
+        document.getElementById('usr-rol').value = rol;
+        document.getElementById('usr-password').placeholder = "Déjalo en blanco para no cambiarla";
+        
+        document.getElementById('btn-guardar-usr').innerText = '💾 Guardar Cambios';
+        document.getElementById('btn-guardar-usr').classList.replace('btn-success', 'btn-primary');
+        document.getElementById('btn-cancelar-usr').classList.remove('hidden');
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Sube la pantalla al formulario
+    }
+
+    // Limpia el formulario y lo devuelve al modo "Crear"
+    function limpiarFormularioUsuarios() {
+        document.getElementById('form-user-titulo').innerText = 'Añadir Nuevo Usuario';
+        document.getElementById('usr-id').value = '';
+        document.getElementById('usr-nombre').value = '';
+        document.getElementById('usr-email').value = '';
+        document.getElementById('usr-password').value = '';
+        document.getElementById('usr-password').placeholder = "Contraseña";
+        document.getElementById('usr-rol').value = 'CLIENTE';
+        
+        document.getElementById('btn-guardar-usr').innerText = '➕ Guardar Usuario';
+        document.getElementById('btn-guardar-usr').classList.replace('btn-primary', 'btn-success');
+        document.getElementById('btn-cancelar-usr').classList.add('hidden');
+    }
+
+    // 4. ELIMINAR (DELETE)
+    async function eliminarUsuario(id) {
+        if (!confirm('¿Estás seguro de que deseas eliminar este usuario de la base de datos?')) return;
+
+        try {
+            const res = await fetch(`/api/usuarios/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${miToken}` }
+            });
+
+            if (res.ok) {
+                cargarUsuarios();
+            } else {
+                const error = await res.json();
+                alert('Error al eliminar: ' + error.error);
+            }
+        } catch (error) { console.error(error); }
+    }
+
+    /* Funciones de Servicios (Lectura) */
+    async function cargarServicios() {
+        const res = await fetch('/api/servicios');
+        const datos = await res.json();
+        const tbody = document.getElementById('tabla-servicios');
+        tbody.innerHTML = '';
+        datos.forEach(s => {
+            tbody.innerHTML += `<tr>
+                <td>${s.id}</td>
+                <td><strong>${s.nombre}</strong><div class="muted" style="font-size:12px">${s.descripcion || ''}</div></td>
+                <td>$${s.precio}</td>
+                <td>${s.duracion_minutos} min</td>
+                <td style="white-space:nowrap;">
+                    <button class="btn btn-primary" onclick="prepararEdicionServicio(${s.id}, '${escapeHtml(s.nombre)}', '${escapeHtml(s.descripcion||'')}', ${s.precio}, ${s.duracion_minutos})">✏️ Editar</button>
+                    <button class="btn btn-danger" onclick="eliminarServicio(${s.id})">🗑️ Borrar</button>
+                </td>
+            </tr>`;
+        });
+    }
+
+    // Helpers para evitar inyección en atributos
+    function escapeHtml(text){
+        return String(text).replace(/'/g, "\\'").replace(/\n/g, ' ');
+    }
+
+    // Preparar edición
+    function prepararEdicionServicio(id, nombre, descripcion, precio, duracion){
+        document.getElementById('svc-id').value = id;
+        document.getElementById('svc-nombre').value = nombre;
+        document.getElementById('svc-descripcion').value = descripcion;
+        document.getElementById('svc-precio').value = precio;
+        document.getElementById('svc-duracion').value = duracion;
+        document.getElementById('svc-action-btn').innerText = '💾 Guardar Cambios';
+        document.getElementById('svc-action-btn').onclick = actualizarServicio;
+        document.getElementById('svc-cancel-btn').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Cancelar edición
+    function cancelarEdicionServicio(){
+        document.getElementById('svc-id').value = '';
+        document.getElementById('svc-nombre').value = '';
+        document.getElementById('svc-descripcion').value = '';
+        document.getElementById('svc-precio').value = '';
+        document.getElementById('svc-duracion').value = '';
+        document.getElementById('svc-action-btn').innerText = '➕ Crear Servicio';
+        document.getElementById('svc-action-btn').onclick = crearServicio;
+        document.getElementById('svc-cancel-btn').classList.add('hidden');
+    }
+
+    // Actualizar servicio (PUT)
+    async function actualizarServicio(){
+        const id = document.getElementById('svc-id').value;
+        const nombre = document.getElementById('svc-nombre').value.trim();
+        const descripcion = document.getElementById('svc-descripcion').value.trim();
+        const precio = Number(document.getElementById('svc-precio').value);
+        const duracion = Number(document.getElementById('svc-duracion').value);
+
+        if(!id) return alert('ID de servicio inválido');
+        if(!nombre || !precio || !duracion) return alert('Nombre, precio y duración son obligatorios.');
+
+        try{
+            const res = await fetch(`/api/servicios/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${miToken}` },
+                body: JSON.stringify({ nombre, descripcion, precio, duracion_minutos: duracion })
+            });
+            const data = await res.json();
+            if(res.ok){
+                alert('Servicio actualizado');
+                cancelarEdicionServicio();
+                cargarServicios();
+            } else {
+                alert('Error: ' + (data.error || data.message || 'No se pudo actualizar'));
+            }
+        }catch(e){ console.error(e); alert('Error al actualizar servicio'); }
+    }
+
+    // Eliminar servicio (DELETE)
+    async function eliminarServicio(id){
+        if(!confirm('¿Eliminar servicio? Esta acción no se puede deshacer.')) return;
+        try{
+            const res = await fetch(`/api/servicios/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${miToken}` }});
+            if(res.ok){ alert('Servicio eliminado'); cargarServicios(); }
+            else { const d = await res.json(); alert('Error: ' + (d.error||d.message||'No se pudo eliminar')); }
+        }catch(e){ console.error(e); alert('Error al eliminar servicio'); }
+    }
+
+    // Crear servicio (Admin)
+    async function crearServicio(){
+        clearServiceErrors();
+        const nombre = document.getElementById('svc-nombre').value.trim();
+        const descripcion = document.getElementById('svc-descripcion').value.trim();
+        const precio = Number(document.getElementById('svc-precio').value);
+        const duracion = Number(document.getElementById('svc-duracion').value);
+
+        if(!validateServiceForm()) return;
+
+        try{
+            const res = await fetch('/api/servicios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${miToken}` },
+                body: JSON.stringify({ nombre, descripcion, precio, duracion_minutos: duracion })
+            });
+
+            const data = await res.json();
+            if(res.ok){
+                alert('Servicio creado correctamente');
+                // limpiar inputs
+                document.getElementById('svc-nombre').value = '';
+                document.getElementById('svc-descripcion').value = '';
+                document.getElementById('svc-precio').value = '';
+                document.getElementById('svc-duracion').value = '';
+                cargarServicios();
+            } else {
+                alert('Error: ' + (data.error || data.message || 'No se pudo crear'));
+            }
+        }catch(e){ console.error(e); alert('Error al crear servicio'); }
+    }
+
+    function clearServiceErrors(){
+        ['nombre','descripcion','precio','duracion'].forEach(f=>{
+            const el = document.getElementById('err-svc-'+f);
+            if(el) el.innerText = '';
+        });
+    }
+
+    function validateServiceForm(){
+        let ok = true;
+        const nombre = document.getElementById('svc-nombre').value.trim();
+        const precio = document.getElementById('svc-precio').value;
+        const duracion = document.getElementById('svc-duracion').value;
+
+        if(!nombre){ document.getElementById('err-svc-nombre').innerText = 'El nombre es obligatorio.'; ok = false; }
+        if(!precio || Number(precio) <= 0){ document.getElementById('err-svc-precio').innerText = 'Precio inválido.'; ok = false; }
+        if(!duracion || Number(duracion) <= 0){ document.getElementById('err-svc-duracion').innerText = 'Duración inválida.'; ok = false; }
+
+        return ok;
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería - Barbería VIP</title>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #c9a84c;
+            --accent-light: #e8c65a;
+            --gold-gradient: linear-gradient(135deg, #c9a84c, #e8c65a, #c9a84c);
+            --bg-dark: #111;
+            --bg-card: #1a1a1a;
+            --text-light: #f0f0f0;
+            --text-muted: #999;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        .header {
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--accent);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header a { text-decoration: none; }
+        .btn {
+            padding: 8px 16px; border: none; border-radius: 6px;
+            cursor: pointer; font-weight: 600; transition: 0.3s; font-size: 13px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-primary { background: var(--gold-gradient); color: #000; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(201,168,76,0.3); }
+        .btn-danger { background: #c0392b; color: white; }
+        .btn-danger:hover { background: #a93226; }
+        .btn-small { padding: 5px 10px; font-size: 11px; }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 25px 15px; }
+        h2 {
+            font-family: 'Oswald', sans-serif;
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 20px;
+        }
+
+        .publicacion {
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid rgba(201,168,76,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .pub-header {
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+        }
+        .pub-header h3 { font-family: 'Oswald', sans-serif; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; font-size: 15px; }
+        .pub-header small { color: #555; font-size: 11px; }
+        .pub-desc { padding: 0 16px 10px; color: #ccc; font-size: 14px; }
+        .pub-media { width: 100%; max-height: 500px; object-fit: cover; cursor: pointer; transition: 0.3s; display: block; }
+        .pub-media:hover { opacity: 0.9; }
+        .pub-actions {
+            padding: 10px 16px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            border-top: 1px solid #222;
+        }
+        .pub-actions button {
+            background: none; border: none;
+            color: #888; cursor: pointer; font-size: 15px;
+            transition: 0.2s; display: flex; align-items: center; gap: 4px;
+        }
+        .pub-actions button:hover { color: var(--accent); }
+        .pub-actions .liked { color: var(--accent); }
+
+        .comentarios { padding: 0 16px 14px; }
+        .comentario { padding: 6px 0; border-bottom: 1px solid #1a1a1a; font-size: 13px; }
+        .comentario-user { color: var(--accent); font-weight: 600; font-size: 12px; display: flex; justify-content: space-between; }
+        .comentario-delete { color: #c0392b; cursor: pointer; font-size: 11px; }
+        .comentario-texto { color: #ccc; margin-top: 2px; }
+        .comentario-input { display: flex; gap: 8px; margin-top: 8px; }
+        .comentario-input input {
+            flex: 1; padding: 8px; border: 1px solid #333; border-radius: 5px;
+            background: #222; color: #f0f0f0; font-size: 13px;
+        }
+        .comentario-input input:focus { border-color: var(--accent); outline: none; }
+        .comentario-input button {
+            padding: 8px 14px; background: var(--gold-gradient); color: #000;
+            border: none; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 12px;
+        }
+
+        .no-data { text-align: center; padding: 40px; color: #666; }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 200; justify-content: center; align-items: center;
+        }
+        .modal.active { display: flex; }
+        .modal img { max-width: 90%; max-height: 90%; border-radius: 8px; }
+        .modal-close {
+            position: absolute; top: 20px; right: 30px;
+            color: white; font-size: 36px; cursor: pointer; transition: 0.3s;
+        }
+        .modal-close:hover { color: var(--accent); }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; gap: 8px; text-align: center; }
+            .header h1 { font-size: 18px; }
+            .pub-actions { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="/" class="header"><h1>✂️ Barbería VIP</h1></a>
+    <div>
+        <a href="/dashboard-cliente.html" class="btn btn-primary btn-small">Volver</a>
+        <button class="btn btn-danger btn-small" onclick="cerrarSesion()">Salir</button>
+    </div>
+</div>
+
+<div class="container">
+    <h2>📸 Galería de Trabajos</h2>
+    <div id="publicaciones-container"><div class="no-data">Cargando...</div></div>
+</div>
+
+<div id="media-modal" class="modal" onclick="cerrarModal()">
+    <span class="modal-close">&times;</span>
+    <img id="modal-media" src="" alt="Media">
+</div>
+
+<script>
+    let usuarioId = null;
+
+    window.onload = () => {
+        const token = localStorage.getItem('token');
+        if (!token) { window.location.href = '/'; return; }
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            usuarioId = payload.id || payload.user_id;
+        } catch(e) { window.location.href = '/'; return; }
+        cargarPublicaciones();
+    };
+
+    function cerrarSesion() { localStorage.clear(); window.location.href = '/'; }
+
+    async function cargarPublicaciones() {
+        try {
+            const res = await fetch('/api/publicaciones');
+            const pubs = await res.json();
+            const c = document.getElementById('publicaciones-container');
+            if (!pubs || pubs.length === 0) {
+                c.innerHTML = '<div class="no-data">No hay publicaciones aún</div>'; return;
+            }
+            c.innerHTML = '';
+            pubs.forEach(pub => {
+                const contenido = pub.contenido_json || {};
+                const mediaUrl = contenido.imagen || contenido.url || '';
+                const likes = pub.likes_count || 0;
+                const dislikes = pub.dislikes_count || 0;
+                c.innerHTML += `
+                    <div class="publicacion">
+                        <div class="pub-header">
+                            <h3>${pub.titulo || 'Sin título'}</h3>
+                            <small>${pub.barbero?.nombre || 'Barbero'} · ${new Date(pub.createdAt).toLocaleDateString('es-CO')}</small>
+                        </div>
+                        ${pub.descripcion ? `<div class="pub-desc">${pub.descripcion}</div>` : ''}
+                        ${mediaUrl ? `<img src="${mediaUrl}" alt="Media" class="pub-media" onclick="abrirMedia('${mediaUrl.replace(/'/g, "\\'")}')">` : ''}
+                        <div class="pub-actions">
+                            <button class="${usuarioId && pub.user_reaction === 'like' ? 'liked' : ''}" onclick="agregarReaccion(${pub.id}, 'like')">👍 ${likes}</button>
+                            <button class="${usuarioId && pub.user_reaction === 'dislike' ? 'liked' : ''}" onclick="agregarReaccion(${pub.id}, 'dislike')">👎 ${dislikes}</button>
+                        </div>
+                        <div class="comentarios">
+                            ${(pub.comentarios || []).map(com => `
+                                <div class="comentario">
+                                    <div class="comentario-user">
+                                        ${com.usuario?.nombre || 'Anónimo'}
+                                        ${com.usuario_id === usuarioId ? `<span class="comentario-delete" onclick="eliminarComentario(${com.id})">eliminar</span>` : ''}
+                                    </div>
+                                    <div class="comentario-texto">${com.texto}</div>
+                                </div>
+                            `).join('')}
+                            <div class="comentario-input">
+                                <input type="text" id="comentario-input-${pub.id}" placeholder="Escribe un comentario..." />
+                                <button onclick="agregarComentario(${pub.id})">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        } catch(e) {
+            document.getElementById('publicaciones-container').innerHTML = '<div class="no-data">Error al cargar</div>';
+        }
+    }
+
+    async function agregarReaccion(pubId, tipo) {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch('/api/publicaciones/' + pubId + '/reacciones', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ tipo })
+            });
+            if (res.ok) cargarPublicaciones();
+        } catch(e) { console.error(e); }
+    }
+
+    async function agregarComentario(pubId) {
+        const input = document.getElementById('comentario-input-' + pubId);
+        const texto = input.value.trim();
+        if (!texto) return Swal.fire({ icon: 'warning', title: 'Escribe un comentario', background: '#1a1a1a', color: '#f0f0f0' });
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch('/api/publicaciones/' + pubId + '/comentarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ texto })
+            });
+            if (res.ok) { input.value = ''; cargarPublicaciones(); }
+        } catch(e) { console.error(e); }
+    }
+
+    async function eliminarComentario(comId) {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch('/api/publicaciones/comentarios/' + comId, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.ok) cargarPublicaciones();
+        } catch(e) { console.error(e); }
+    }
+
+    function abrirMedia(src) {
+        document.getElementById('modal-media').src = src;
+        document.getElementById('media-modal').classList.add('active');
+    }
+    function cerrarModal() { document.getElementById('media-modal').classList.remove('active'); }
+</script>
+
+</body>
+</html>

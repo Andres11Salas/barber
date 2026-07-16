@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbería VIP - Inicio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #c9a84c;
+            --accent-light: #e8c65a;
+            --dark: #0f0f0f;
+            --gold-gradient: linear-gradient(135deg, #c9a84c, #e8c65a, #c9a84c);
+            --bg-dark: #111;
+            --bg-card: #1a1a1a;
+            --text-light: #f0f0f0;
+            --text-muted: #999;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            border-bottom: 2px solid var(--accent);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            text-decoration: none;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+            letter-spacing: 1px;
+        }
+        .nav-buttons .btn {
+            margin-left: 10px;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+        }
+        .btn-outline:hover {
+            background: var(--accent);
+            color: #000;
+        }
+        .btn-primary {
+            background: var(--gold-gradient);
+            border: none;
+            color: #000;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(201,168,76,0.4);
+        }
+
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* HERO */
+        .hero {
+            text-align: center;
+            padding: 50px 20px 30px;
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 50%, #0f0f0f 100%);
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: var(--gold-gradient);
+        }
+        .hero h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(28px, 5vw, 48px);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+        .hero p {
+            color: var(--text-muted);
+            font-size: clamp(14px, 2vw, 18px);
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        /* CARRUSEL */
+        .carousel-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        .carousel-container {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            aspect-ratio: 16/9;
+            max-height: 450px;
+            background: #000;
+            border: 1px solid rgba(201,168,76,0.2);
+        }
+        .carousel-slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+        .carousel-slide.active { opacity: 1; }
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .carousel-caption {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent 0%, rgba(0,0,0,0.85) 100%);
+            color: white;
+            padding: 40px 20px 20px;
+            text-align: center;
+        }
+        .carousel-caption h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(18px, 3vw, 26px);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .carousel-caption p {
+            font-size: clamp(12px, 1.5vw, 15px);
+            opacity: 0.8;
+            margin: 3px 0 8px;
+        }
+        .price-badge {
+            display: inline-block;
+            background: var(--gold-gradient);
+            color: #000;
+            padding: 5px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: clamp(13px, 1.5vw, 16px);
+        }
+        .carousel-dots {
+            position: absolute;
+            bottom: 12px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; gap: 8px; z-index: 10;
+        }
+        .dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .dot.active {
+            background: var(--accent);
+            width: 28px;
+            border-radius: 5px;
+        }
+        .carousel-controls {
+            position: absolute;
+            top: 50%; left: 0; right: 0;
+            transform: translateY(-50%);
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .carousel-btn {
+            pointer-events: auto;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(201,168,76,0.3);
+            color: var(--accent);
+            font-size: 22px;
+            padding: 10px 14px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 44px; height: 44px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .carousel-btn:hover {
+            background: var(--accent);
+            color: #000;
+        }
+
+        /* PRECIOS */
+        .pricing-section {
+            max-width: 1100px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+        .pricing-section h2 {
+            font-family: 'Oswald', sans-serif;
+            text-align: center;
+            font-size: clamp(22px, 4vw, 32px);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+        .pricing-section h2 small {
+            display: block;
+            font-size: clamp(11px, 1.5vw, 13px);
+            color: var(--text-muted);
+            font-weight: normal;
+            letter-spacing: 1px;
+            -webkit-text-fill-color: var(--text-muted);
+            margin-top: 5px;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .pricing-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(201,168,76,0.15);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .pricing-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(201,168,76,0.15);
+            border-color: rgba(201,168,76,0.3);
+        }
+        .pricing-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        .pricing-card-body {
+            padding: 18px 16px 20px;
+        }
+        .pricing-card-body h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 17px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+        .pricing-card-body p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            min-height: 35px;
+        }
+        .pricing-card-body .precio {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pricing-card-body .precio small {
+            font-size: 12px;
+            color: #666;
+            font-weight: 400;
+        }
+        .pricing-card .duracion {
+            display: inline-block;
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        /* AUTENTICACIÓN */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 85vh;
+            padding: 30px 15px;
+        }
+        .auth-card {
+            background: var(--bg-card);
+            padding: 35px 30px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid rgba(201,168,76,0.15);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .auth-card h2 {
+            font-family: 'Oswald', sans-serif;
+            text-align: center;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+        .auth-card .form-control {
+            background: #222;
+            border: 1px solid #333;
+            color: #f0f0f0;
+            padding: 12px 15px;
+            border-radius: 6px;
+        }
+        .auth-card .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 0.2rem rgba(201,168,76,0.15);
+            background: #2a2a2a;
+        }
+        .auth-card .form-control::placeholder { color: #666; }
+        .invalid-feedback { display: none; font-size: 13px; color: #e74c3c; }
+        .was-validated .form-control:invalid ~ .invalid-feedback,
+        .form-control.is-invalid ~ .invalid-feedback { display: block; }
+
+        .btn-login {
+            padding: 12px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.3s;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: var(--gold-gradient);
+            color: #000;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(201,168,76,0.4);
+        }
+        .btn-success {
+            background: var(--gold-gradient);
+            color: #000;
+            border: none;
+        }
+        .link {
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 14px;
+            display: block;
+            margin-top: 15px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .link:hover { color: var(--accent-light); }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+            color: #666;
+            font-size: 13px;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #333;
+        }
+        .divider:not(:empty)::before { margin-right: 12px; }
+        .divider:not(:empty)::after { margin-left: 12px; }
+
+        .form-check-label { color: #ccc; }
+        .form-check-input { background: #333; border-color: #555; }
+        .form-check-input:checked { background-color: var(--accent); border-color: var(--accent); }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .navbar { padding: 10px 15px; flex-direction: column; gap: 10px; }
+            .nav-buttons { display: flex; gap: 8px; }
+            .nav-buttons .btn { margin-left: 0; font-size: 12px; padding: 6px 14px; }
+            .auth-card { padding: 25px 20px; }
+            .carousel-container { aspect-ratio: 4/3; }
+        }
+
+        @media (max-width: 480px) {
+            .pricing-grid { grid-template-columns: 1fr; }
+            .carousel-container { aspect-ratio: 3/4; max-height: 350px; }
+            .auth-card h2 { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="/" class="logo">✂️ Barbería VIP</a>
+        <div class="nav-buttons">
+            <button class="btn btn-outline" onclick="cambiarVista('view-login')">Iniciar Sesión</button>
+            <button class="btn btn-primary" onclick="cambiarVista('view-registro')" style="width:auto;">Registrarse</button>
+        </div>
+    </div>
+
+    <div id="view-landing" class="view active">
+        <div class="hero">
+            <h1>Estilo que habla por sí solo</h1>
+            <p>Precisión, elegancia y tradición en cada corte</p>
+            <div class="carousel-wrapper">
+                <div class="carousel-container">
+                    <div class="carousel-slide active">
+                        <img src="https://images.unsplash.com/photo-1599407367267-f3a1df6cd13b?w=900&q=80" alt="Corte clásico" loading="lazy">
+                        <div class="carousel-caption">
+                            <h3>✂️ Corte Clásico</h3>
+                            <p>Corte a tijera y máquina con acabado profesional</p>
+                            <span class="price-badge">$18.000 COP</span>
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=900&q=80" alt="Corte Fade" loading="lazy">
+                        <div class="carousel-caption">
+                            <h3>🔥 Corte Fade</h3>
+                            <p>Degradado perfecto, el estilo más popular</p>
+                            <span class="price-badge">$22.000 COP</span>
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1596728325488-58c87691e9af?w=900&q=80" alt="Corte con barba" loading="lazy">
+                        <div class="carousel-caption">
+                            <h3>🧔 Corte + Barba</h3>
+                            <p>Corte personalizado + perfilado de barba completa</p>
+                            <span class="price-badge">$30.000 COP</span>
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1599407373949-28747cef1b1a?w=900&q=80" alt="Afeitado clásico" loading="lazy">
+                        <div class="carousel-caption">
+                            <h3>🪒 Afeitado Clásico</h3>
+                            <p>Afeitado tradicional con toalla caliente y navaja</p>
+                            <span class="price-badge">$15.000 COP</span>
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1567894340315-735d7c361db7?w=900&q=80" alt="Corte degradado" loading="lazy">
+                        <div class="carousel-caption">
+                            <h3>⚡ Corte Degradado + Cejas</h3>
+                            <p>Corte degradado con diseño y perfilado de cejas</p>
+                            <span class="price-badge">$35.000 COP</span>
+                        </div>
+                    </div>
+                    <div class="carousel-controls">
+                        <button class="carousel-btn" onclick="cambiarImagenAnterior()">❮</button>
+                        <button class="carousel-btn" onclick="cambiarImagenSiguiente()">❯</button>
+                    </div>
+                    <div class="carousel-dots" id="carousel-dots"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pricing-section">
+            <h2>💈 Nuestros Cortes y Precios <small>Precios estándar en Bogotá — Calidad VIP</small></h2>
+            <div class="pricing-grid" id="pricing-grid">
+                <div style="text-align: center; color: #666; padding: 40px; grid-column: 1/-1;">Cargando servicios...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-login" class="view">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Iniciar Sesión</h2>
+                <form id="loginForm" novalidate>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" id="login-email" placeholder="Tu correo electrónico" required>
+                        <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" class="form-control" id="login-password" placeholder="Tu contraseña" required minlength="6">
+                        <div class="invalid-feedback">La contraseña debe tener al menos 6 caracteres.</div>
+                    </div>
+                    <button type="submit" class="btn-login">Entrar</button>
+                </form>
+                <div class="divider">o</div>
+                <div id="g_id_login" style="text-align: center;"></div>
+                <span class="link" onclick="cambiarVista('view-recuperar')">¿Olvidaste tu contraseña?</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-registro" class="view">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Crear Cuenta</h2>
+                <form id="registroForm" novalidate>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="reg-nombre" placeholder="Nombre completo" required>
+                        <div class="invalid-feedback">El nombre es obligatorio.</div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" id="reg-email" placeholder="Correo electrónico" required>
+                        <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" class="form-control" id="reg-password" placeholder="Crea una contraseña" required minlength="6">
+                        <div class="invalid-feedback">La contraseña debe tener al menos 6 caracteres.</div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" class="form-control" id="reg-password-confirm" placeholder="Confirma tu contraseña" required minlength="6">
+                        <div class="invalid-feedback">Las contraseñas deben coincidir.</div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="reg-terminos" required>
+                        <label class="form-check-label" for="reg-terminos" style="font-size:14px;">Acepto los términos y condiciones</label>
+                        <div class="invalid-feedback">Debes aceptar los términos y condiciones.</div>
+                    </div>
+                    <button type="submit" class="btn-login btn-success">Registrarme</button>
+                </form>
+                <div class="divider">o</div>
+                <div id="g_id_register" style="text-align: center;"></div>
+                <span class="link" onclick="cambiarVista('view-login')">¿Ya tienes cuenta? Inicia sesión</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-recuperar" class="view">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Recuperar Acceso</h2>
+                <p style="font-size: 14px; color: #666; text-align: center; margin-bottom: 20px;">Ingresa tu correo para generar una clave temporal.</p>
+                <form id="recuperarForm" novalidate>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" id="rec-email" placeholder="Tu correo electrónico" required>
+                        <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
+                    </div>
+                    <button type="submit" class="btn-login" style="background:#e67e22;color:#fff;">Restablecer</button>
+                </form>
+                <span class="link" onclick="cambiarVista('view-login')">Volver al Login</span>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const GOOGLE_CLIENT_ID = '1005516255318-5l9k684hplhl213tp1vqjrmtjf0m7un0.apps.googleusercontent.com';
+    let slideIndex = 0;
+    const slides = document.querySelectorAll('.carousel-slide');
+
+    function initCarouselDots() {
+        const dotsContainer = document.getElementById('carousel-dots');
+        slides.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (index === 0 ? ' active' : '');
+            dot.onclick = () => goToSlide(index);
+            dotsContainer.appendChild(dot);
+        });
+    }
+
+    function goToSlide(n) { slideIndex = n; mostrarSlide(); }
+    function cambiarImagenSiguiente() { slideIndex++; if (slideIndex >= slides.length) slideIndex = 0; mostrarSlide(); }
+    function cambiarImagenAnterior() { slideIndex--; if (slideIndex < 0) slideIndex = slides.length - 1; mostrarSlide(); }
+    function cambiarImagen() { cambiarImagenSiguiente(); }
+
+    function mostrarSlide() {
+        slides.forEach(slide => slide.classList.remove('active'));
+        document.querySelectorAll('.dot').forEach(dot => dot.classList.remove('active'));
+        slides[slideIndex].classList.add('active');
+        document.querySelectorAll('.dot')[slideIndex].classList.add('active');
+    }
+
+    const servicioImages = {
+        'corte': 'https://images.unsplash.com/photo-1599407367267-f3a1df6cd13b?w=600&q=80',
+        'fade': 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80',
+        'barba': 'https://images.unsplash.com/photo-1595617707802-a9403604ff04?w=600&q=80',
+        'degrado': 'https://images.unsplash.com/photo-1567894340315-735d7c361db7?w=600&q=80',
+        'clasico': 'https://images.unsplash.com/photo-1599407367267-f3a1df6cd13b?w=600&q=80',
+        'cej': 'https://images.unsplash.com/photo-1621605815971-fbc98d665666?w=600&q=80',
+        'default': 'https://images.unsplash.com/photo-1537639507592-cc4467fb1923?w=600&q=80'
+    };
+
+    function obtenerImagenServicio(nombre) {
+        const name = nombre.toLowerCase();
+        for (const [key, url] of Object.entries(servicioImages)) {
+            if (key !== 'default' && name.includes(key)) return url;
+        }
+        return servicioImages.default;
+    }
+
+    async function cargarPrecios() {
+        try {
+            const res = await fetch('/api/servicios');
+            const servicios = await res.json();
+            const grid = document.getElementById('pricing-grid');
+            if (!servicios || servicios.length === 0) {
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666;">No hay servicios disponibles</div>';
+                return;
+            }
+            grid.innerHTML = '';
+            servicios.forEach(s => {
+                const img = obtenerImagenServicio(s.nombre);
+                const precio = Number(s.precio).toLocaleString('es-CO');
+                grid.innerHTML += `
+                    <div class="pricing-card">
+                        <img src="${img}" alt="${s.nombre}" loading="lazy">
+                        <div class="pricing-card-body">
+                            <h3>${s.nombre}</h3>
+                            <p>${s.descripcion || 'Servicio profesional'}</p>
+                            <div class="precio">$${precio} <small>COP</small></div>
+                            <div class="duracion">⏱️ ${s.duracion_minutos} min</div>
+                        </div>
+                    </div>
+                `;
+            });
+        } catch (error) {
+            document.getElementById('pricing-grid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#e74c3c;">Error al cargar servicios</div>';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initCarouselDots();
+        cargarPrecios();
+    });
+    setInterval(cambiarImagen, 5000);
+
+    function cambiarVista(vistaId) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(vistaId).classList.add('active');
+    }
+
+    window.onload = () => {
+        const token = localStorage.getItem('token');
+        const rol = localStorage.getItem('rol');
+        if (token) {
+            if (rol === 'CLIENTE') window.location.href = '/dashboard-cliente.html';
+            else if (rol === 'BARBERO') window.location.href = '/dashboard-barbero.html';
+            else window.location.href = '/dashboard-admin.html';
+        }
+        try {
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleGoogleCredential
+            });
+            google.accounts.id.renderButton(
+                document.getElementById('g_id_login'),
+                { theme: 'outline', size: 'large', text: 'signin_with', shape: 'rectangular', width: 300 }
+            );
+            google.accounts.id.renderButton(
+                document.getElementById('g_id_register'),
+                { theme: 'outline', size: 'large', text: 'signup_with', shape: 'rectangular', width: 300 }
+            );
+        } catch (e) {
+            console.warn('Google Sign-In no disponible:', e);
+        }
+    };
+
+    async function handleGoogleCredential(response) {
+        try {
+            const res = await fetch('/api/auth/google', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_token: response.credential })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('refresh', data.refresh||'');
+                localStorage.setItem('rol', data.rol);
+                localStorage.setItem('nombre', data.nombre);
+                await Swal.fire({ icon: 'success', title: data.mensaje, timer: 2000, showConfirmButton: false, background: '#1a1a1a', color: '#f0f0f0' });
+                if (data.rol === 'CLIENTE') window.location.href = '/dashboard-cliente.html';
+                else if (data.rol === 'BARBERO') window.location.href = '/dashboard-barbero.html';
+                else window.location.href = '/dashboard-admin.html';
+            } else {
+                await Swal.fire({ icon: 'error', title: 'Error', text: data.error || 'Error al autenticar con Google', background: '#1a1a1a', color: '#f0f0f0' });
+            }
+        } catch (error) {
+            await Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servidor.', background: '#1a1a1a', color: '#f0f0f0' });
+        }
+    }
+
+    function manejarFormForm(selector, config) {
+        const form = document.querySelector(selector);
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            form.classList.add('was-validated');
+            const body = config.body();
+            if (body === null) return;
+            if (!form.checkValidity()) return;
+            try {
+                const res = await fetch(config.url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    if (config.onSuccess) config.onSuccess(data);
+                } else {
+                    await Swal.fire({ icon: 'error', title: 'Error', text: data.error || 'Ocurrió un error.', background: '#1a1a1a', color: '#f0f0f0' });
+                }
+            } catch (error) {
+                await Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servidor.', background: '#1a1a1a', color: '#f0f0f0' });
+            }
+        });
+    }
+
+    manejarFormForm('#loginForm', {
+        url: '/api/auth/login',
+        body: () => ({ email: document.getElementById('login-email').value, password: document.getElementById('login-password').value }),
+        onSuccess: (data) => {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('refresh', data.refresh||'');
+            localStorage.setItem('rol', data.rol);
+            localStorage.setItem('nombre', data.mensaje.replace('Bienvenido ', ''));
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 1500, showConfirmButton: false, background: '#1a1a1a', color: '#f0f0f0' }).then(() => {
+                if (data.rol === 'CLIENTE') window.location.href = '/dashboard-cliente.html';
+                else if (data.rol === 'BARBERO') window.location.href = '/dashboard-barbero.html';
+                else window.location.href = '/dashboard-admin.html';
+            });
+        }
+    });
+
+    manejarFormForm('#registroForm', {
+        url: '/api/auth/registro',
+        body: () => {
+            const password = document.getElementById('reg-password').value;
+            const confirm = document.getElementById('reg-password-confirm').value;
+            if (password !== confirm) {
+                document.getElementById('reg-password-confirm').setCustomValidity('Las contraseñas no coinciden');
+                document.getElementById('reg-password-confirm').classList.add('is-invalid');
+                return null;
+            }
+            document.getElementById('reg-password-confirm').setCustomValidity('');
+            return { nombre: document.getElementById('reg-nombre').value, email: document.getElementById('reg-email').value, password };
+        },
+        onSuccess: (data) => {
+            Swal.fire({ icon: 'success', title: data.mensaje, timer: 2000, showConfirmButton: false, background: '#1a1a1a', color: '#f0f0f0' }).then(() => cambiarVista('view-login'));
+        }
+    });
+
+    manejarFormForm('#recuperarForm', {
+        url: '/api/auth/recuperar',
+        body: () => ({ email: document.getElementById('rec-email').value }),
+        onSuccess: (data) => {
+            Swal.fire({ icon: 'success', title: data.mensaje, text: data.instruccion, confirmButtonText: 'Entendido', background: '#1a1a1a', color: '#f0f0f0' });
+        }
+    });
+</script>
+
+</body>
+</html>
