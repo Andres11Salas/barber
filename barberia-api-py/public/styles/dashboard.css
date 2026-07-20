@@ -1,0 +1,54 @@
+:root{
+  --brand-blue: #1f618d;
+  --brand-light-blue: #3498db;
+  --brand-red: #c0392b;
+  --muted: #7f8c8d;
+  --surface: #ffffff;
+  --elevation: rgba(0,0,0,0.08);
+}
+/* Global */
+html,body{height:100%;}
+body{font-family: 'Segoe UI', Tahoma, sans-serif; background: linear-gradient(180deg,#fafbfd 0%, #f4f6f8 100%); color:#222; margin:0;}
+a{color:var(--brand-blue);}
+
+/* Header / Navbar */
+.header, .navbar{background:var(--brand-blue); color:white;}
+.header a h1, .navbar .logo{color: white;}
+
+/* Sidebar */
+.sidebar{background:linear-gradient(180deg,var(--surface), #fbfbfb);} 
+.sidebar nav a{color:var(--brand-blue);}
+.sidebar nav a.active{background:var(--brand-blue); color:white;}
+
+/* Main container */
+.container{background:var(--surface); border-radius:10px; padding:18px; box-shadow: 0 8px 24px var(--elevation);} 
+
+/* Buttons */
+.btn{border-radius:8px; padding:10px 14px; font-weight:700; border:none; cursor:pointer}
+.btn-primary{background:var(--brand-light-blue); color:white}
+.btn-primary:hover{background:var(--brand-blue)}
+.btn-danger{background:var(--brand-red); color:white}
+.btn-success{background:#27ae60; color:white}
+.btn-outline{background:transparent; border:2px solid white; color:white}
+
+/* Cards & grid */
+.card{background:var(--surface); border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,0.06);}
+.grid{gap:20px}
+
+/* Carousel */
+.carousel{border-radius:12px; overflow:hidden}
+.carousel img{display:block}
+
+/* Tables */
+table{width:100%; border-collapse:collapse}
+th{background:var(--brand-blue); color:white; padding:12px;}
+td, th{padding:10px; border-bottom:1px solid #eee}
+
+/* Small utilities */
+.muted{color:var(--muted)}
+
+/* Responsive tweaks */
+@media (max-width:900px){
+  .sidebar{position:static;width:100%;}
+  .main{margin-left:0}
+}

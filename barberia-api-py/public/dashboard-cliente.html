@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Cliente - Barbería VIP</title>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #c9a84c;
+            --accent-light: #e8c65a;
+            --gold-gradient: linear-gradient(135deg, #c9a84c, #e8c65a, #c9a84c);
+            --bg-dark: #111;
+            --bg-card: #1a1a1a;
+            --text-light: #f0f0f0;
+            --text-muted: #999;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-dark); color: var(--text-light); }
+        .header { background: linear-gradient(180deg,#0a0a0a 0%,#1a1a2e 100%); padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
+        .header h1 { font-family: 'Playfair Display', serif; font-size: 22px; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tabs-container { background: #0a0a0a; border-bottom: 1px solid #222; padding: 0 15px; display: flex; gap: 3px; position: sticky; top: 56px; z-index: 99; overflow-x: auto; }
+        .tab-btn { padding: 12px 16px; border: none; background: none; cursor: pointer; font-weight: 600; color: #666; border-bottom: 3px solid transparent; transition: 0.2s; font-size: 14px; white-space: nowrap; text-transform: uppercase; letter-spacing: 1px; }
+        .tab-btn:hover { color: var(--accent); }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 25px 15px; }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        h2 { font-family: 'Oswald', sans-serif; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 8px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; font-size: 20px; }
+        .card { background: var(--bg-card); border-radius: 10px; border: 1px solid rgba(201,168,76,0.1); padding: 18px; margin-bottom: 18px; }
+        .card h3 { color: var(--accent); font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 1px; font-size: 15px; margin-bottom: 12px; }
+        .card p { margin: 6px 0; font-size: 14px; }
+        .card strong { color: var(--accent); }
+        table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 10px; overflow: hidden; border: 1px solid rgba(201,168,76,0.1); margin-top: 15px; }
+        thead { background: #0a0a0a; }
+        th { padding: 12px 15px; text-align: left; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; font-size: 12px; }
+        td { padding: 12px 15px; border-bottom: 1px solid #222; font-size: 14px; }
+        tbody tr:hover { background: rgba(201,168,76,0.05); }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.3s; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-primary { background: var(--gold-gradient); color: #000; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(201,168,76,0.3); }
+        .btn-danger { background: #c0392b; color: white; }
+        .btn-danger:hover { background: #a93226; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+        .btn-outline:hover { background: var(--accent); color: #000; }
+        .btn-small { padding: 6px 12px; font-size: 12px; margin: 2px; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .badge-pendiente { background: #e67e22; color: white; }
+        .badge-completada { background: #27ae60; color: white; }
+        .badge-cancelada { background: #c0392b; color: white; }
+        .service-card { background: var(--bg-card); border-radius: 10px; border: 1px solid rgba(201,168,76,0.1); padding: 16px; text-align: center; }
+        .service-card h4 { color: var(--accent); font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .service-card .price { font-size: 24px; font-weight: 700; color: var(--accent); margin: 8px 0; }
+        .service-card .duration { color: #888; font-size: 13px; margin-bottom: 8px; }
+        .service-card .btn-agendar { margin-top: 8px; width: 100%; }
+        .barbero-card { background: var(--bg-card); border-radius: 10px; border: 1px solid rgba(201,168,76,0.1); padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; }
+        .barbero-card .avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; font-size: 22px; color: #000; flex-shrink: 0; }
+        .barbero-card .info { flex: 1; }
+        .barbero-card .info .name { font-weight: 700; color: var(--accent); font-size: 15px; }
+        .barbero-card .info .detail { color: #888; font-size: 13px; }
+        .barbero-card .espacios { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+        .barbero-card .slot-badge { background: #222; color: var(--accent); padding: 3px 8px; border-radius: 4px; font-size: 11px; border: 1px solid #333; }
+        .pub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; margin-top: 15px; }
+        .pub-card { background: var(--bg-card); border-radius: 10px; border: 1px solid rgba(201,168,76,0.1); padding: 16px; }
+        .pub-card h4 { color: var(--accent); font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .pub-card p { color: #ccc; font-size: 13px; margin: 5px 0; }
+        .no-data { text-align: center; padding: 40px; color: #666; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #333; border-radius: 6px; background: #222; color: #f0f0f0; font-size: 14px; margin: 5px 0 12px; }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 2px rgba(201,168,76,0.15); }
+        label { display: block; font-weight: 600; margin-bottom: 3px; color: var(--accent); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+        .field-error { color: #e74c3c; font-size: 12px; margin-top: 2px; display: block; }
+        .edit-btn { color: var(--accent); cursor: pointer; font-size: 13px; margin-left: 10px; }
+        .edit-btn:hover { text-decoration: underline; }
+        .wrap-btn { display: flex; gap: 5px; flex-wrap: wrap; }
+        .chip-selector { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+        .chip { background: #222; border: 1px solid #444; border-radius: 8px; padding: 10px 14px; cursor: pointer; transition: 0.2s; text-align: center; min-width: 100px; flex:1; }
+        .chip:hover { border-color: var(--accent); }
+        .chip.selected { background: rgba(201,168,76,0.15); border-color: var(--accent); color: var(--accent); }
+        .chip .chip-name { font-weight: 600; font-size: 14px; }
+        .chip .chip-price { font-size: 16px; font-weight: 700; color: var(--accent); margin: 3px 0; }
+        .chip .chip-duration { font-size: 11px; color: #888; }
+        .chip .chip-check { display: none; font-size: 18px; }
+        .chip.selected .chip-check { display: block; color: var(--accent); }
+        .resumen-servicios { background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2); border-radius: 8px; padding: 12px; margin: 12px 0; font-size: 14px; }
+        .resumen-servicios strong { color: var(--accent); }
+        @media (max-width:768px) { .header{flex-direction:column;gap:8px;text-align:center} .tabs-container{top:90px} th,td{padding:8px 8px;font-size:12px} }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Barbería VIP</h1>
+    <div><span style="color:var(--accent);font-weight:600;font-size:14px;" id="badge-rol"></span><button class="btn btn-danger btn-small" onclick="cerrarSesion()">Salir</button></div>
+</div>
+<div class="tabs-container">
+    <button class="tab-btn active" onclick="mostrarSeccion('perfil',this)">Perfil</button>
+    <button class="tab-btn" onclick="mostrarSeccion('servicios',this)">Servicios</button>
+    <button class="tab-btn" onclick="mostrarSeccion('barberos',this)">Barberos</button>
+    <button class="tab-btn" onclick="mostrarSeccion('citas',this)">Mis Citas</button>
+    <button class="tab-btn" onclick="mostrarSeccion('galeria',this)">Galeria</button>
+</div>
+<div class="container">
+    <div id="sec-perfil" class="section active">
+        <h2>Mi Perfil <span class="edit-btn" onclick="editarPerfil()">Editar</span></h2>
+        <div class="card" style="max-width:550px;">
+            <p><strong>Nombre:</strong> <span id="perfil-nombre">-</span></p>
+            <p><strong>Email:</strong> <span id="perfil-email">-</span></p>
+            <p><strong>Telefono:</strong> <span id="perfil-telefono">-</span></p>
+            <p><strong>Bio:</strong> <span id="perfil-bio">-</span></p>
+            <p><strong>Rol:</strong> <span id="perfil-rol">-</span></p>
+            <p><strong>Miembro desde:</strong> <span id="perfil-creado">-</span></p>
+        </div>
+    </div>
+    <div id="sec-servicios" class="section">
+        <h2>Servicios</h2>
+        <div id="servicios-container"></div>
+    </div>
+    <div id="sec-barberos" class="section">
+        <h2>Nuestros Barberos</h2>
+        <div id="barberos-container"><div class="no-data">Cargando...</div></div>
+    </div>
+    <div id="sec-citas" class="section">
+        <h2>Mis Citas</h2>
+        <button class="btn btn-primary" onclick="agendarCita()" style="margin-bottom:15px;">+ Nueva Cita</button>
+        <table><thead><tr><th>Fecha/Hora</th><th>Barbero</th><th>Servicios</th><th>Duracion</th><th>Precio</th><th>Estado</th><th>Accion</th></tr></thead><tbody id="tabla-citas"><tr><td colspan="7" style="text-align:center;padding:30px;color:#666;">Cargando...</td></tr></tbody></table>
+    </div>
+    <div id="sec-galeria" class="section">
+        <h2>Galeria</h2>
+        <div id="galeria-container" class="pub-grid"><div class="no-data">Cargando...</div></div>
+    </div>
+</div>
+<script>
+    let miId = null, token = localStorage.getItem('token'), rol = localStorage.getItem('rol'), refreshToken = localStorage.getItem('refresh');
+    if (!token || rol !== 'CLIENTE') { window.location.href = '/'; }
+
+    async function refrescarToken(){
+        if(!refreshToken) return false;
+        try{
+            const r = await fetch('/api/auth/refresh',{
+                method:'POST',headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({refresh:refreshToken})
+            });
+            if(!r.ok) return false;
+            const d = await r.json();
+            token = d.access; localStorage.setItem('token',token);
+            refreshToken = d.refresh||refreshToken; localStorage.setItem('refresh', refreshToken);
+            return true;
+        }catch(e){ return false; }
+    }
+
+    window.onload = function(){
+        const p = JSON.parse(atob(token.split('.')[1])); miId = p.id || p.user_id;
+        document.getElementById('badge-rol').innerText = 'CLIENTE';
+        cargarPerfil(); cargarServicios(); cargarBarberos(); cargarCitas(); cargarGaleria();
+        setInterval(refrescarToken, 55*60*1000);
+    };
+    function mostrarSeccion(s,btn){
+        document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+        document.getElementById('sec-'+s).classList.add('active');
+        if(btn) btn.classList.add('active');
+        if(s==='galeria') cargarGaleria();
+        if(s==='citas') cargarCitas();
+    }
+    function cerrarSesion(){ localStorage.clear(); window.location.href='/'; }
+    async function cargarPerfil(){
+        try {
+            const r = await fetch('/api/usuarios/'+miId); const d = await r.json();
+            document.getElementById('perfil-nombre').innerText = d.nombre;
+            document.getElementById('perfil-email').innerText = d.email;
+            document.getElementById('perfil-telefono').innerText = d.telefono || 'No registrado';
+            document.getElementById('perfil-bio').innerText = d.bio || 'Sin descripcion';
+            document.getElementById('perfil-rol').innerText = d.rol;
+            document.getElementById('perfil-creado').innerText = d.createdAt ? new Date(d.createdAt).toLocaleDateString() : '-';
+        }catch(e){}
+    }
+    async function editarPerfil(){
+        const {value: form} = await Swal.fire({
+            title:'Editar Perfil',
+            html:`<div><input id="swal-nombre" class="swal2-input" placeholder="Nombre" value="${document.getElementById('perfil-nombre').innerText}"><input id="swal-telefono" class="swal2-input" placeholder="Telefono" value="${document.getElementById('perfil-telefono').innerText==='No registrado'?'':document.getElementById('perfil-telefono').innerText}"><textarea id="swal-bio" class="swal2-input" style="height:80px" placeholder="Cuentanos de ti...">${document.getElementById('perfil-bio').innerText==='Sin descripcion'?'':document.getElementById('perfil-bio').innerText}</textarea></div>`,
+            focusConfirm:false,preConfirm:()=>{
+                const nombre=document.getElementById('swal-nombre').value.trim();
+                if(!nombre){Swal.showValidationMessage('El nombre es obligatorio');return false;}
+                return {nombre,telefono:document.getElementById('swal-telefono').value.trim(),bio:document.getElementById('swal-bio').value.trim()};
+            },background:'#1a1a1a',color:'#f0f0f0',confirmButtonText:'Guardar',cancelButtonText:'Cancelar',showCancelButton:true
+        });
+        if(!form) return;
+        try {
+            const r = await fetch('/api/usuarios/mi_perfil',{
+                method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+                body:JSON.stringify(form)
+            });
+            if(r.ok){
+                await Swal.fire({icon:'success',title:'Perfil actualizado',timer:1500,background:'#1a1a1a',color:'#f0f0f0',showConfirmButton:false});
+                cargarPerfil();
+            } else {
+                const d = await r.json();
+                await Swal.fire({icon:'error',title:'Error',text:d.detail||d.error||d.message||JSON.stringify(d),background:'#1a1a1a',color:'#f0f0f0'});
+            }
+        }catch(e){ await Swal.fire({icon:'error',title:'Error de conexion',background:'#1a1a1a',color:'#f0f0f0'}); }
+    }
+    async function cargarServicios(){
+        try {
+            const r = await fetch('/api/servicios'); const servicios = await r.json();
+            const c = document.getElementById('servicios-container');
+            if(!servicios.length){c.innerHTML='<div class="no-data">Sin servicios disponibles</div>';return;}
+            const cortes = servicios.filter(s=>s.nombre.startsWith('Corte'));
+            const adicionales = servicios.filter(s=>!s.nombre.startsWith('Corte'));
+            let html = '<h3 style="color:var(--accent);margin:20px 0 10px;font-family:Oswald,sans-serif;text-transform:uppercase;letter-spacing:1px;">Cortes de Cabello</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;">';
+            cortes.forEach(s=>{
+                html+=`<div class="service-card"><h4>${s.nombre}</h4><p style="color:#ccc;font-size:13px;">${s.descripcion||''}</p><div class="price">$${s.precio}</div><div class="duration">${s.duracion_minutos} min</div><button class="btn btn-primary btn-agendar" onclick="agendarConServicio([${s.id}])">Solo este</button><button class="btn btn-outline btn-small" style="margin-top:4px;width:100%;" onclick="agendarConServicio()">Combinar +</button></div>`;
+            });
+            html+=`</div><h3 style="color:var(--accent);margin:30px 0 10px;font-family:Oswald,sans-serif;text-transform:uppercase;letter-spacing:1px;">Servicios Adicionales (para combinar)</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;">`;
+            adicionales.forEach(s=>{
+                html+=`<div class="service-card" style="border-color:rgba(201,168,76,0.07);"><h4>${s.nombre}</h4><p style="color:#ccc;font-size:13px;">${s.descripcion||''}</p><div class="price">$${s.precio}</div><div class="duration">+${s.duracion_minutos} min</div></div>`;
+            });
+            html+='</div>';
+            c.innerHTML = html;
+        }catch(e){}
+    }
+    async function cargarBarberos(){
+        try {
+            const r = await fetch('/api/usuarios'); const usuarios = await r.json();
+            const barberos = usuarios.filter(u=>u.rol==='BARBERO'&&u.estado==='ACTIVO');
+            const c = document.getElementById('barberos-container');
+            if(!barberos.length){c.innerHTML='<div class="no-data">Sin barberos disponibles</div>';return;}
+            c.innerHTML='';
+            for(const b of barberos){
+                c.innerHTML+=`<div class="barbero-card" onclick="verBarbero(${b.id})"><div class="avatar">💈</div><div class="info"><div class="name">${b.nombre}</div><div class="detail">${b.email}${b.telefono?' | 📞 '+b.telefono:''}</div></div><button class="btn btn-primary btn-small" onclick="event.stopPropagation();agendarConBarbero(${b.id})">Agendar</button></div>`;
+            }
+        }catch(e){}
+    }
+    async function cargarCitas(){
+        try {
+            const r = await fetch('/api/citas',{headers:{'Authorization':'Bearer '+token}}); const citas = await r.json();
+            const t = document.getElementById('tabla-citas');
+            if(!citas.length){t.innerHTML='<tr><td colspan="7" style="text-align:center;padding:30px;color:#666;">Sin citas agendadas</td></tr>';return;}
+            t.innerHTML='';
+            citas.sort((a,b)=>new Date(a.fecha+'T'+a.hora)-new Date(b.fecha+'T'+b.hora));
+            citas.forEach(c=>{
+                const badgeClass = c.estado==='COMPLETADA'?'badge-completada':c.estado==='CANCELADA'?'badge-cancelada':'badge-pendiente';
+                const puedeEditar = c.estado==='PENDIENTE';
+                const nomServicios = c.servicios_nombres || (c.servicio?.nombre||'');
+                let totalPrecio = parseFloat(c.servicio?.precio||0);
+                if(c.servicios_adicionales) c.servicios_adicionales.forEach(s=>totalPrecio+=parseFloat(s.precio||0));
+                t.innerHTML+=`<tr><td><strong>${c.fecha}</strong><br><small style="color:#666;">${c.hora}</small></td><td>${c.barbero?.nombre||'N/A'}</td><td>${nomServicios}</td><td>${c.duracion_total||'-'} min</td><td><strong>$${totalPrecio.toFixed(2)}</strong></td><td><span class="badge ${badgeClass}">${c.estado}</span></td><td class="wrap-btn">${puedeEditar?`<button class="btn btn-danger btn-small" onclick="cancelarCita(${c.id})">Cancelar</button><button class="btn btn-warning btn-small" onclick="editarCita(${c.id})">Editar</button><button class="btn btn-success btn-small" onclick="pagarCita(${c.id})">Pagar</button>`:'<span style="color:#666;font-size:12px;">-</span>'}</td></tr>`;
+            });
+        }catch(e){ console.error(e); }
+    }
+    async function editarCita(id){
+        try {
+            const r = await fetch('/api/citas/'+id,{headers:{'Authorization':'Bearer '+token}}); const cita = await r.json();
+            const {value: form} = await Swal.fire({
+                title:'Editar Cita',
+                html:`<div><label>Fecha</label><input id="swal-fecha" class="swal2-input" type="date" value="${cita.fecha}"><label>Hora (10:00-19:00)</label><input id="swal-hora" class="swal2-input" type="time" value="${cita.hora}" min="10:00" max="18:00"><label>Barbero</label><select id="swal-barbero" class="swal2-input">${await (async()=>{const r=await fetch('/api/usuarios');const u=await r.json();const bid=cita.barbero?.id;return u.filter(x=>x.rol==='BARBERO'&&x.estado==='ACTIVO').map(b=>`<option value="${b.id}" ${b.id===bid?'selected':''}>${b.nombre}</option>`).join('');})()}</select></div>`,
+                focusConfirm:false,preConfirm:()=>{
+                    const fecha=document.getElementById('swal-fecha').value;const hora=document.getElementById('swal-hora').value;const barbero=document.getElementById('swal-barbero').value;
+                    if(!fecha||!hora||!barbero){Swal.showValidationMessage('Completa todos los campos');return false;}
+                    const sel=new Date(fecha);const hoy=new Date();hoy.setHours(0,0,0,0);
+                    if(sel<hoy){Swal.showValidationMessage('Fecha no puede ser pasada');return false;}
+                    const dia=sel.getDay();if(dia===0||dia===6){Swal.showValidationMessage('Solo lun-vie');return false;}
+                    if(hora<'10:00'||hora>'18:00'){Swal.showValidationMessage('Horario 10:00-19:00');return false;}
+                    return {fecha,hora,barbero_id:parseInt(barbero)};},
+                    background:'#1a1a1a',color:'#f0f0f0',confirmButtonText:'Guardar',cancelButtonText:'Cancelar',showCancelButton:true
+                });
+            if(!form)return;
+            try{
+                const res=await fetch('/api/citas/'+id,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+                    body:JSON.stringify(form)});
+                if(res.ok){await Swal.fire({icon:'success',title:'Actualizada',timer:1500,background:'#1a1a1a',color:'#f0f0f0'});cargarCitas();}
+                else{const d=await res.json();if(await manejarErrorAuth(d,res))return;await Swal.fire({icon:'error',title:'Error',text:d.error||d.detail||JSON.stringify(d),background:'#1a1a1a',color:'#f0f0f0'});}
+            }catch(e){}
+        }catch(e){}
+    }
+    async function verBarbero(id){
+        try {
+            const r = await fetch('/api/usuarios/'+id); const b = await r.json();
+            await Swal.fire({
+                title: `<span style="font-size:28px;">💈 ${b.nombre}</span>`,
+                html: `<div style="text-align:left;font-size:15px;"><p style="margin:6px 0;"><strong style="color:var(--accent);">Email:</strong> ${b.email}</p><p style="margin:6px 0;"><strong style="color:var(--accent);">Teléfono:</strong> ${b.telefono||'No registrado'}</p><p style="margin:6px 0;"><strong style="color:var(--accent);">Bio:</strong> ${b.bio||'Sin descripción'}</p></div>`,
+                icon: 'info', confirmButtonText: 'Cerrar', background: '#1a1a1a', color: '#f0f0f0'
+            });
+        }catch(e){}
+    }
+    let _serviciosGlobal = [];
+    window.toggleChip = function(el){
+        el.classList.toggle('selected');
+        const chips = document.querySelectorAll('#swal-servicios .chip.selected');
+        const ids = Array.from(chips).map(c=>parseInt(c.dataset.id));
+        let tot=0,prec=0;
+        ids.forEach(i=>{const s=_serviciosGlobal.find(x=>x.id===i);if(s){tot+=s.duracion_minutos;prec+=parseFloat(s.precio);}});
+        const r = document.getElementById('swal-resumen');
+        if(r) r.innerHTML=`<strong>Seleccionados:</strong> ${ids.length} servicio${ids.length!==1?'s':''} | <strong>Total:</strong> $${prec} | <strong>Duracion:</strong> ${tot} min`;
+    };
+    async function agendarConServicio(sid){
+        const ids = Array.isArray(sid) ? sid : (sid ? [sid] : null);
+        agendarCita(ids);
+    }
+    async function agendarConBarbero(bid){ agendarCita(null, bid); }
+    async function agendarCita(preServicioIds, preBarberoId){
+        const servicios = await (await fetch('/api/servicios')).json();
+        _serviciosGlobal = servicios;
+        let idsSeleccionados = preServicioIds || [];
+        if(!preServicioIds || !preServicioIds.length){
+            const {value: confirmed} = await Swal.fire({
+                title:'Selecciona tus servicios',
+                html:`<div style="text-align:left;margin-bottom:8px;color:#ccc;">Puedes elegir varios servicios (corte + barba + cejas, etc.):</div><div id="swal-servicios" class="chip-selector">${servicios.map(s=>`<div class="chip" data-id="${s.id}" onclick="toggleChip(this)"><div class="chip-name">${s.nombre}</div><div class="chip-price">$${s.precio}</div><div class="chip-duration">${s.duracion_minutos} min</div><div class="chip-check">✓</div></div>`).join('')}</div><div id="swal-resumen" class="resumen-servicios"><strong>Seleccionados:</strong> 0 servicios — <strong>Duracion:</strong> 0 min — <strong>Total:</strong> $0</div>`,
+                focusConfirm:false,showCancelButton:true,confirmButtonText:'Siguiente',cancelButtonText:'Cancelar',
+                preConfirm:()=>{
+                    const chips=document.querySelectorAll('#swal-servicios .chip.selected');
+                    if(!chips.length){Swal.showValidationMessage('Selecciona al menos un servicio');return false;}
+                    return Array.from(chips).map(c=>parseInt(c.dataset.id));},
+                background:'#1a1a1a',color:'#f0f0f0'
+            });
+            if(!confirmed) return;
+            idsSeleccionados = confirmed;
+        }
+        const tiempoResp = await fetch(`/api/citas/tiempo_servicios?${idsSeleccionados.map(i=>'servicio_ids[]='+i).join('&')}`);
+        const tiempoData = await tiempoResp.json();
+        const duracion = tiempoData.duracion_total || 30;
+        const {value: fecha} = await Swal.fire({
+            title:'Elige la Fecha (Lun-Vie)',
+            input:'date',
+            inputValidator:(v)=>{if(!v)return'Selecciona una fecha';const sel=new Date(v);const hoy=new Date();hoy.setHours(0,0,0,0);if(sel<hoy)return'No puede ser pasada';const dia=sel.getDay();if(dia===0||dia===6)return'Solo lunes a viernes';},
+            background:'#1a1a1a',color:'#f0f0f0',showCancelButton:true,confirmButtonText:'Siguiente',cancelButtonText:'Atras'
+        });
+        if(!fecha) return;
+        const styleSlots = document.createElement('style');
+        styleSlots.textContent = `
+            .slot-visual { display:flex; gap:4px; flex-wrap:wrap; margin-top:8px; }
+            .slot-pill { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:6px; font-size:11px; font-weight:700; transition:0.2s; }
+            .slot-free { background:rgba(39,174,96,0.2); color:#2ecc71; border:1px solid rgba(39,174,96,0.3); }
+            .slot-ocupado { background:rgba(192,57,43,0.2); color:#e74c3c; border:1px solid rgba(192,57,43,0.3); }
+            .slot-pasado { background:rgba(85,85,85,0.2); color:#555; border:1px solid rgba(85,85,85,0.3); }
+            .hora-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
+            .hora-chip { padding:10px; border-radius:8px; text-align:center; cursor:pointer; font-weight:600; font-size:14px; transition:0.2s; border:2px solid transparent; }
+            .hora-chip.free { background:rgba(39,174,96,0.15); color:#2ecc71; border-color:rgba(39,174,96,0.2); }
+            .hora-chip.free:hover { background:rgba(39,174,96,0.3); border-color:#2ecc71; }
+            .hora-chip.free.selected { background:#2ecc71; color:#000; border-color:#2ecc71; }
+            .hora-chip.ocupado { background:rgba(85,85,85,0.1); color:#555; border-color:transparent; cursor:not-allowed; }
+        `;
+        document.head.appendChild(styleSlots);
+        const {value: barberoData} = await Swal.fire({
+            title:'Elige un Barbero y horario',
+            html:`<div style="margin-bottom:8px;color:#ccc;font-size:13px;">Selecciona un barbero. Los horarios disponibles se muestran en <span style="color:#2ecc71;">verde</span> y ocupados en <span style="color:#e74c3c;">rojo</span>.</div><div id="swal-barberos"></div><div id="swal-hora-picker" style="display:none;margin-top:15px;border-top:1px solid #333;padding-top:15px;"><div style="color:var(--accent);font-size:14px;margin-bottom:8px;">🕐 Selecciona tu horario:</div><div id="swal-hora-grid" class="hora-grid"></div></div>`,
+            preConfirm:()=>{
+                const sel=document.querySelector('input[name="barbero-sel"]:checked');
+                if(!sel){Swal.showValidationMessage('Selecciona un barbero');return false;}
+                const horaSel = document.querySelector('.hora-chip.free.selected');
+                if(!horaSel){Swal.showValidationMessage('Selecciona un horario disponible');return false;}
+                return {id:parseInt(sel.value),nombre:sel.closest('.barbero-card')?.querySelector('.name')?.textContent||'',hora:horaSel.dataset.hora};},
+            background:'#1a1a1a',color:'#f0f0f0',showCancelButton:true,confirmButtonText:'Agendar',cancelButtonText:'Atras',
+            didOpen:async()=>{
+                const c=document.getElementById('swal-barberos');
+                const hp=document.getElementById('swal-hora-picker');
+                const hg=document.getElementById('swal-hora-grid');
+                try{
+                    const r=await fetch(`/api/citas/barberos_disponibles?fecha=${fecha}&duracion=${duracion}`);
+                    const barberos=await r.json();
+                    if(!barberos.length){c.innerHTML='<div style="color:#666;padding:20px;text-align:center;">No hay barberos disponibles</div>';return;}
+                    c.innerHTML=barberos.map(b=>`<div class="barbero-card" style="cursor:pointer;margin-bottom:8px;${!b.espacios_libres||!b.espacios_libres.length?'opacity:0.5;':''}" onclick="window.selBarbero(${b.id})"><input type="radio" name="barbero-sel" id="b_${b.id}" value='${b.id}' data-espacios='${(b.espacios_libres||[]).length}' style="display:none"><div class="avatar">💈</div><div class="info"><div class="name">${b.nombre}</div><div class="detail">${b.email}${b.telefono?' 📞'+b.telefono:''}</div><div class="slot-visual">${(b.slots||[]).map(s=>`<span class="slot-pill ${s.disponible?'slot-free':s.pasado?'slot-pasado':'slot-ocupado'}" title="${s.hora}${s.disponible?' - Disponible':s.pasado?' - Pasado':' - Ocupado'}">${s.hora.replace(':00','')}</span>`).join('')}</div></div></div>`).join('');
+                    window.selBarbero = function(id){
+                        document.querySelectorAll('input[name="barbero-sel"]').forEach(x=>x.checked=false);
+                        const rb = document.getElementById('b_'+id);
+                        if(rb) rb.checked = true;
+                        const barbero = barberos.find(x=>x.id===id);
+                        if(barbero && barbero.slots){
+                            const libres = barbero.slots.filter(s=>s.disponible);
+                            if(libres.length){
+                                hp.style.display='block';
+                                hg.innerHTML=libres.map(s=>`<div class="hora-chip free" data-hora="${s.hora}" onclick="document.querySelectorAll('.hora-chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');">${s.hora}</div>`).join('')+'<div style="grid-column:1/-1;color:#888;font-size:12px;padding-top:4px;">Horas libres</div>';
+                            } else {
+                                hp.style.display='block';
+                                hg.innerHTML='<div style="grid-column:1/-1;color:#e74c3c;font-size:13px;padding:10px;text-align:center;">No hay horarios libres para este barbero en esta fecha</div>';
+                            }
+                        }
+                    };
+                }catch(e){c.innerHTML='<div style="color:#e74c3c;">Error al cargar barberos</div>';}
+            }
+        });
+        if(!barberoData) return;
+        const barberoId = barberoData.id;
+        const hora = barberoData.hora;
+        if(!hora) return;
+        try {
+            const r = await fetch('/api/citas',{
+                method:'POST',
+                headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+                body:JSON.stringify({servicio_id:idsSeleccionados[0],servicios_adicionales_ids:idsSeleccionados.slice(1),fecha,hora,barbero_id:parseInt(barberoId)})
+            });
+            if(r.ok){
+                const nueva = await r.json();
+                const total = await (async()=>{let t=parseFloat(nueva.servicio?.precio||0);if(nueva.servicios_adicionales) nueva.servicios_adicionales.forEach(s=>t+=parseFloat(s.precio||0));return t.toFixed(2);})();
+                const {isConfirmed: pagarAhora} = await Swal.fire({
+                    icon:'success',title:'Cita agendada con exito',
+                    html:`<div style="margin-bottom:12px;">✅ <strong style="color:var(--accent);">${nueva.servicios_nombres||'Cita'}</strong></div>
+                    <div style="font-size:14px;color:#ccc;">📅 ${nueva.fecha} a las ${nueva.hora}</div>
+                    <div style="font-size:14px;color:#ccc;">💈 Barbero: ${nueva.barbero_nombre||''}</div>
+                    <div style="margin-top:12px;font-size:20px;font-weight:700;color:var(--accent);">Total: $${total}</div>`,
+                    showCancelButton:true,confirmButtonText:'💳 Pagar ahora',cancelButtonText:'✅ Ver mis citas',background:'#1a1a1a',color:'#f0f0f0'
+                });
+                mostrarSeccion('citas',document.querySelector('.tab-btn:nth-child(4)'));
+                cargarCitas();
+                if(pagarAhora) pagarCita(nueva.id);
+            } else {
+                const d = await r.json();
+                if(await manejarErrorAuth(d,r)) return;
+                await Swal.fire({icon:'error',title:'Error al agendar',text:d.error||d.detail||'Ocurrio un error al crear la cita. Intenta de nuevo.',background:'#1a1a1a',color:'#f0f0f0'});
+            }
+        }catch(e){ await Swal.fire({icon:'error',title:'Error de conexion',background:'#1a1a1a',color:'#f0f0f0'}); }
+    }
+    async function manejarErrorAuth(d, res){
+        if(!d) return false;
+        if(!res || res.status!==401) return false;
+        const ok = await refrescarToken();
+        if(ok){ window.location.reload(); return true; }
+        await Swal.fire({icon:'warning',title:'Sesion expirada',text:'Tu sesion ha expirado. Vuelve a iniciar sesion.',confirmButtonText:'OK',background:'#1a1a1a',color:'#f0f0f0'});
+        localStorage.clear();
+        window.location.href='/';
+        return true;
+    }
+    async function pagarCita(citaId){
+        try {
+            Swal.fire({title:'Generando pago...',allowOutsideClick:false,didOpen:()=>Swal.showLoading(),background:'#1a1a1a',color:'#f0f0f0'});
+            const r = await fetch('/api/pagos/crear',{
+                method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+                body:JSON.stringify({cita_id:citaId})
+            });
+            Swal.close();
+            const d = await r.json();
+            if(await manejarErrorAuth(d,r)) return;
+            if(d.url_pago || d.init_point){
+                const link = d.url_pago || d.init_point;
+                window.open(link,'_blank');
+                await Swal.fire({
+                    icon:'info',title:'Pago en Mercado Pago',
+                    html:`<p style="margin:8px 0;">${d.descripcion||''}</p><p style="font-size:24px;font-weight:700;color:var(--accent);">$${parseFloat(d.monto||0).toFixed(2)}</p><p style="color:#888;font-size:13px;">Se abrio una nueva pestaña para completar el pago</p>`,
+                    confirmButtonText:'OK',background:'#1a1a1a',color:'#f0f0f0'
+                });
+                cargarCitas();
+            } else {
+                await Swal.fire({icon:'error',title:'Error',text:d.error||'No se pudo generar el pago',background:'#1a1a1a',color:'#f0f0f0'});
+            }
+        }catch(e){
+            Swal.close();
+            await Swal.fire({icon:'error',title:'Error de conexion',background:'#1a1a1a',color:'#f0f0f0'});
+        }
+    }
+    async function cancelarCita(id){
+        const r=await Swal.fire({title:'Cancelar cita?',icon:'warning',showCancelButton:true,confirmButtonText:'Si, cancelar',cancelButtonText:'No',background:'#1a1a1a',color:'#f0f0f0'});
+        if(!r.isConfirmed) return;
+        try {
+            const res = await fetch('/api/citas/cliente/'+id,{method:'DELETE',headers:{'Authorization':'Bearer '+token}});
+            if(res.ok){ await Swal.fire({icon:'success',title:'Cancelada',timer:1500,background:'#1a1a1a',color:'#f0f0f0',showConfirmButton:false}); cargarCitas(); }
+            else { let d; try{d=await res.json();}catch(e){d={error:'Error del servidor'}}; await Swal.fire({icon:'error',title:'Error',text:d.error||d.detail,background:'#1a1a1a',color:'#f0f0f0'}); }
+        }catch(e){}
+    }
+    async function cargarGaleria(){
+        try {
+            const r = await fetch('/api/publicaciones'); const pubs = await r.json();
+            const c = document.getElementById('galeria-container');
+            if(!pubs.length){c.innerHTML='<div class="no-data">Sin publicaciones</div>';return;}
+            c.innerHTML='';
+            pubs.forEach(p=>{
+                const img = (p.contenido_json?.imagen||p.contenido_json?.imagenes?.[0]||'');
+                c.innerHTML+=`<div class="pub-card"><h4>${p.titulo}</h4><p>${(p.descripcion||'').substring(0,120)}</p>${img?`<img src="${img}" style="width:100%;height:120px;object-fit:cover;border-radius:6px;margin:8px 0;" loading="lazy">`:''}<div style="display:flex;gap:12px;margin-top:10px;padding-top:8px;border-top:1px solid #222;font-size:12px;color:#888;">👍 ${p.likes_count||0} | 💬 ${p.comentarios?.length||0}</div></div>`;
+            });
+        }catch(e){}
+    }
+</script>
+</body>
+</html>

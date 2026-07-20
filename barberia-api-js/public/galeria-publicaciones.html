@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería de Publicaciones - Barbería</title>
+    <style>
+        :root {
+            --brand-blue: #1f618d;
+            --brand-light-blue: #3498db;
+            --brand-red: #c0392b;
+            --muted: #7f8c8d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(180deg, #fafbfd 0%, #f4f6f8 100%);
+            color: #222;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background: var(--brand-blue);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .btn-danger {
+            background: var(--brand-red);
+            color: white;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            color: var(--brand-blue);
+            border-bottom: 2px solid var(--brand-light-blue);
+            padding-bottom: 10px;
+        }
+
+        /* Publicaciones */
+        .publicaciones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .publicacion-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .publicacion-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        }
+
+        .publicacion-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .barbero-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--brand-light-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .barbero-info h3 {
+            margin: 0;
+            color: var(--brand-blue);
+            font-size: 15px;
+        }
+
+        .barbero-info p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .publicacion-contenido {
+            padding: 15px;
+            min-height: 200px;
+            background: #f9fafb;
+        }
+
+        .publicacion-titulo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--brand-blue);
+            margin: 0 0 10px 0;
+        }
+
+        .publicacion-desc {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .publicacion-imagenes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .publicacion-imagenes img,
+        .publicacion-imagenes video {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .publicacion-footer {
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .reacciones {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .reaccion-btn {
+            background: none;
+            border: 1px solid #ddd;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .reaccion-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .reaccion-btn.active {
+            background: var(--brand-light-blue);
+            color: white;
+            border-color: var(--brand-light-blue);
+        }
+
+        .reaccion-btn.dislike {
+            color: var(--brand-red);
+        }
+
+        .reaccion-btn.dislike.active {
+            background: var(--brand-red);
+            color: white;
+            border-color: var(--brand-red);
+        }
+
+        .comentarios-seccion {
+            margin-top: 10px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+
+        .comentarios-lista {
+            max-height: 250px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+
+        .comentario {
+            background: #fafafa;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .comentario-user {
+            font-weight: 700;
+            color: var(--brand-blue);
+            margin-bottom: 4px;
+        }
+
+        .comentario-texto {
+            color: #555;
+            line-height: 1.4;
+        }
+
+        .comentario-delete {
+            font-size: 10px;
+            color: var(--brand-red);
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .comentario-input {
+            display: flex;
+            gap: 6px;
+        }
+
+        .comentario-input input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .comentario-input button {
+            padding: 8px 12px;
+            background: var(--brand-light-blue);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--muted);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--muted);
+        }
+    </style>
+    <link rel="stylesheet" href="styles/dashboard.css">
+</head>
+<body>
+
+<div class="header">
+    <a href="/dashboard-cliente.html" style="text-decoration: none; color: white;">
+        <h1>💈 Galería de Publicaciones</h1>
+    </a>
+    <div>
+        <span id="nombre-usuario" style="margin-right: 15px;"></span>
+        <button class="btn btn-danger" onclick="cerrarSesion()">Salir</button>
+    </div>
+</div>
+
+<div class="container">
+    <h2>✨ Conoce a nuestros Barberos</h2>
+    <div id="publicaciones-container" class="publicaciones-grid">
+        <div class="no-data">Cargando publicaciones...</div>
+    </div>
+</div>
+
+<!-- Modal para imagen/video grande -->
+<div id="media-modal" class="modal" onclick="if(event.target===this) cerrarModal()">
+    <div class="modal-content" style="max-width: 90%; background: black; border-radius: 0;">
+        <span class="modal-close" onclick="cerrarModal()">✕</span>
+        <img id="modal-media" src="" alt="" style="width: 100%; height: auto; display: block;">
+    </div>
+</div>
+
+<script>
+    let usuarioId = null;
+    let usuarioNombre = '';
+
+    window.onload = () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/';
+            return;
+        }
+
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        usuarioId = payload.id;
+        usuarioNombre = localStorage.getItem('nombre') || 'Usuario';
+        document.getElementById('nombre-usuario').innerText = `Hola, ${usuarioNombre}`;
+
+        cargarPublicaciones();
+        // Auto-refresh cada 15 segundos
+        setInterval(cargarPublicaciones, 15000);
+        window.addEventListener('focus', cargarPublicaciones);
+    };
+
+    async function cargarPublicaciones() {
+        try {
+            const res = await fetch('/api/publicaciones');
+            const publicaciones = await res.json();
+            const container = document.getElementById('publicaciones-container');
+
+            if (publicaciones.length === 0) {
+                container.innerHTML = '<div class="no-data">Aún no hay publicaciones. ¡Vuelve pronto!</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            publicaciones.forEach(pub => {
+                const miReaccion = pub.reacciones.find(r => r.usuario_id === usuarioId);
+                const html = `
+                    <div class="publicacion-card">
+                        <div class="publicacion-header">
+                            <div class="barbero-avatar">${pub.barbero.nombre.charAt(0).toUpperCase()}</div>
+                            <div class="barbero-info">
+                                <h3><a href="perfil-barbero.html?id=${pub.barbero.id}" style="color: var(--brand-blue); text-decoration: none;">${pub.barbero.nombre}</a></h3>
+                                <p>${new Date(pub.createdAt).toLocaleDateString('es-MX')}</p>
+                            </div>
+                        </div>
+                        <div class="publicacion-contenido">
+                            <h4 class="publicacion-titulo">${pub.titulo}</h4>
+                            <p class="publicacion-desc">${pub.descripcion}</p>
+                            <div class="publicacion-imagenes">
+                                ${pub.contenido_json?.imagenes ? pub.contenido_json.imagenes.map(img => 
+                                    `<img src="${img}" alt="publicacion" onclick="abrirMedia('${img}')">`
+                                ).join('') : ''}
+                                ${pub.contenido_json?.videos ? pub.contenido_json.videos.map(vid => 
+                                    `<video style="cursor: pointer;" onclick="abrirMedia('${vid}')"><source src="${vid}"></video>`
+                                ).join('') : ''}
+                            </div>
+                        </div>
+                        <div class="publicacion-footer">
+                            <div class="reacciones">
+                                <button class="reaccion-btn ${miReaccion?.tipo === 'like' ? 'active' : ''}" onclick="agregarReaccion(${pub.id}, 'like')">
+                                    👍 Like <span>(${pub.likes_count})</span>
+                                </button>
+                                <button class="reaccion-btn dislike ${miReaccion?.tipo === 'dislike' ? 'active' : ''}" onclick="agregarReaccion(${pub.id}, 'dislike')">
+                                    👎 Dislike <span>(${pub.dislikes_count})</span>
+                                </button>
+                            </div>
+                            <div class="comentarios-seccion">
+                                <strong style="font-size: 13px;">Comentarios (${pub.comentarios.length})</strong>
+                                <div class="comentarios-lista">
+                                    ${pub.comentarios.map(com => `
+                                        <div class="comentario">
+                                            <div class="comentario-user">
+                                                ${com.usuario.nombre}
+                                                ${com.usuario_id === usuarioId ? `<span class="comentario-delete" onclick="eliminarComentario(${com.id})">eliminar</span>` : ''}
+                                            </div>
+                                            <div class="comentario-texto">${com.texto}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div class="comentario-input">
+                                    <input type="text" id="comentario-input-${pub.id}" placeholder="Escribe un comentario..." />
+                                    <button onclick="agregarComentario(${pub.id})">Enviar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        } catch (error) {
+            console.error('Error cargando publicaciones:', error);
+            document.getElementById('publicaciones-container').innerHTML = '<div class="no-data">Error al cargar publicaciones</div>';
+        }
+    }
+
+    async function agregarReaccion(pubId, tipo) {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`/api/publicaciones/${pubId}/reacciones`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ tipo })
+            });
+            if (res.ok) cargarPublicaciones();
+        } catch (error) { console.error('Error:', error); }
+    }
+
+    async function agregarComentario(pubId) {
+        const input = document.getElementById(`comentario-input-${pubId}`);
+        const texto = input.value.trim();
+        if (!texto) return alert('Escriba un comentario');
+
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`/api/publicaciones/${pubId}/comentarios`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ texto })
+            });
+            if (res.ok) {
+                input.value = '';
+                cargarPublicaciones();
+            }
+        } catch (error) { console.error('Error:', error); }
+    }
+
+    async function eliminarComentario(comId) {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`/api/publicaciones/comentarios/${comId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) cargarPublicaciones();
+        } catch (error) { console.error('Error:', error); }
+    }
+
+    function abrirMedia(src) {
+        document.getElementById('modal-media').src = src;
+        document.getElementById('media-modal').classList.add('active');
+    }
+
+    function cerrarModal() {
+        document.getElementById('media-modal').classList.remove('active');
+    }
+
+    function cerrarSesion() {
+        localStorage.clear();
+        window.location.href = '/';
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Dashboard - Barbería</title>
+    <style>
+        :root {
+            --brand-blue: #1f618d;
+            --brand-light-blue: #3498db;
+            --brand-red: #c0392b;
+            --muted: #7f8c8d;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(180deg, #fafbfd 0%, #f4f6f8 100%);
+            color: #222;
+        }
+
+        /* HEADER */
+        .header {
+            background: var(--brand-blue);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .header div {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* TABS */
+        .tabs-container {
+            background: white;
+            border-bottom: 1px solid #e6e6e6;
+            padding: 0 30px;
+            display: flex;
+            gap: 5px;
+            position: sticky;
+            top: 60px;
+            z-index: 19;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 15px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--muted);
+            border-bottom: 3px solid transparent;
+            transition: 0.2s;
+            font-size: 15px;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--brand-blue);
+        }
+
+        .tab-btn.active {
+            color: var(--brand-blue);
+            border-bottom-color: var(--brand-blue);
+        }
+
+        /* CONTAINER */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h2 {
+            color: var(--brand-blue);
+            border-bottom: 2px solid var(--brand-light-blue);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* SECCIÓN: PERFIL */
+        .profile-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            max-width: 600px;
+        }
+
+        .profile-header {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--brand-blue), var(--brand-light-blue));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .profile-info h3 {
+            margin: 0 0 5px 0;
+            color: var(--brand-blue);
+        }
+
+        .profile-info p {
+            margin: 5px 0;
+            color: var(--muted);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--brand-blue);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e6e6e6;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* GRID SERVICIOS */
+        .servicios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+
+        .service-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, var(--brand-blue), var(--brand-light-blue));
+        }
+
+        .service-info {
+            padding: 20px;
+        }
+
+        .service-card h3 {
+            margin: 0 0 10px 0;
+            color: var(--brand-blue);
+        }
+
+        .service-price {
+            font-size: 28px;
+            color: var(--brand-red);
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        /* GRID BARBEROS */
+        .barberos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .barbero-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .barbero-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+
+        .barbero-header {
+            background: linear-gradient(135deg, var(--brand-blue), var(--brand-light-blue));
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .barbero-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+
+        .barbero-header h3 {
+            margin: 10px 0 5px 0;
+        }
+
+        .barbero-content {
+            padding: 20px;
+        }
+
+        .barbero-info {
+            font-size: 13px;
+            color: var(--muted);
+            margin: 8px 0;
+        }
+
+        /* TABLA CITAS */
+        .citas-table {
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--brand-blue);
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        /* BOTONES */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--brand-light-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--brand-blue);
+        }
+
+        .btn-danger {
+            background: var(--brand-red);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #a93326;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* NO DATA */
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+            background: white;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .tabs-container {
+                padding: 0 15px;
+            }
+
+            .servicios-grid,
+            .barberos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="styles/dashboard.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <h1>💈 Mi Dashboard</h1>
+    <div>
+        <span id="nombre-usuario" style="font-weight: bold;"></span>
+        <button class="btn btn-danger btn-small" onclick="cerrarSesion()">Salir</button>
+    </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-container">
+    <button class="tab-btn active" onclick="mostrarSeccion('perfil')">👤 Mi Perfil</button>
+    <button class="tab-btn" onclick="mostrarSeccion('servicios')">✂️ Servicios</button>
+    <button class="tab-btn" onclick="mostrarSeccion('barberos')">💇 Barberos</button>
+    <button class="tab-btn" onclick="mostrarSeccion('citas')">📅 Mis Citas</button>
+    <button class="tab-btn" onclick="mostrarSeccion('galeria')">📸 Galería</button>
+</div>
+
+<!-- CONTENIDO -->
+<div class="container">
+
+    <!-- SECCIÓN: MI PERFIL -->
+    <div id="sec-perfil" class="section active">
+        <h2>👤 Mi Perfil</h2>
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="avatar" id="avatar">👤</div>
+                <div class="profile-info">
+                    <h3 id="perfil-nombre">Cargando...</h3>
+                    <p id="perfil-rol">Cliente</p>
+                    <p style="font-size: 13px; color: #999;">ID: <span id="perfil-id">-</span></p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Nombre Completo</label>
+                <input type="text" id="input-nombre" />
+            </div>
+
+            <div class="form-group">
+                <label>Correo Electrónico</label>
+                <input type="email" id="input-email" />
+            </div>
+
+            <div class="form-group">
+                <label>Teléfono</label>
+                <input type="tel" id="input-telefono" />
+            </div>
+
+            <div class="form-group">
+                <label>Biografía (Opcional)</label>
+                <textarea id="input-bio"></textarea>
+            </div>
+
+            <button class="btn btn-primary btn-block" onclick="guardarPerfil()">💾 Guardar Cambios</button>
+            <p style="text-align: center; margin-top: 15px; color: #999; font-size: 12px;">Tus datos se almacenarán de forma segura</p>
+        </div>
+    </div>
+
+    <!-- SECCIÓN: SERVICIOS -->
+    <div id="sec-servicios" class="section">
+        <h2>✂️ Servicios Disponibles</h2>
+        <p style="color: var(--muted); margin-bottom: 20px;">Elige el servicio que deseas y agenda tu cita</p>
+        <div id="servicios-container" class="servicios-grid">
+            <div class="no-data">Cargando servicios...</div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN: BARBEROS -->
+    <div id="sec-barberos" class="section">
+        <h2>💇 Nuestros Barberos</h2>
+        <p style="color: var(--muted); margin-bottom: 20px;">Conoce a nuestro equipo de profesionales</p>
+        <div id="barberos-container" class="barberos-grid">
+            <div class="no-data">Cargando barberos...</div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN: MIS CITAS -->
+    <div id="sec-citas" class="section">
+        <h2>📅 Mis Citas Agendadas</h2>
+        <div class="citas-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>Barbero</th>
+                        <th>Servicio</th>
+                        <th>Precio</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-citas">
+                    <tr><td colspan="5" style="text-align: center;">Cargando citas...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SECCIÓN: GALERÍA -->
+    <div id="sec-galeria" class="section">
+        <h2>📸 Galería de Publicaciones</h2>
+        <p style="color: var(--muted); margin-bottom: 20px;">Explora los trabajos de nuestros barberos</p>
+        <div style="text-align: center; padding: 40px;">
+            <p style="font-size: 16px; color: var(--muted); margin-bottom: 15px;">Redirigiendo a la galería...</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let usuarioId = null;
+
+    window.onload = () => {
+        const token = localStorage.getItem('token');
+        const rol = localStorage.getItem('rol');
+        
+        if (!token || rol !== 'CLIENTE') {
+            window.location.href = '/';
+            return;
+        }
+
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        usuarioId = payload.id;
+        document.getElementById('nombre-usuario').innerText = localStorage.getItem('nombre');
+
+        cargarPerfil();
+        cargarServicios();
+        cargarBarberos();
+        cargarCitas();
+    };
+
+    function mostrarSeccion(seccion) {
+        // Ocultar todas
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+        // Mostrar la seleccionada
+        document.getElementById('sec-' + seccion).classList.add('active');
+        event.target.classList.add('active');
+
+        // Redirigir a galería
+        if (seccion === 'galeria') {
+            window.location.href = '/galeria-publicaciones.html';
+        }
+    }
+
+    function cerrarSesion() {
+        localStorage.clear();
+        window.location.href = '/';
+    }
+
+    async function cargarPerfil() {
+        try {
+            const res = await fetch(`/api/usuarios/${usuarioId}`);
+            const usuario = await res.json();
+
+            document.getElementById('avatar').innerText = usuario.nombre.charAt(0).toUpperCase();
+            document.getElementById('perfil-nombre').innerText = usuario.nombre;
+            document.getElementById('perfil-id').innerText = usuario.id;
+            document.getElementById('perfil-rol').innerText = usuario.rol;
+
+            // Llenar formulario
+            document.getElementById('input-nombre').value = usuario.nombre;
+            document.getElementById('input-email').value = usuario.email;
+            document.getElementById('input-telefono').value = usuario.telefono || '';
+            document.getElementById('input-bio').value = usuario.bio || '';
+        } catch (error) {
+            console.error('Error cargando perfil:', error);
+        }
+    }
+
+    async function guardarPerfil() {
+        const nombre = document.getElementById('input-nombre').value;
+        const email = document.getElementById('input-email').value;
+        const telefono = document.getElementById('input-telefono').value;
+        const bio = document.getElementById('input-bio').value;
+        const token = localStorage.getItem('token');
+
+        try {
+            const res = await fetch(`/api/usuarios/${usuarioId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ nombre, email, telefono, bio })
+            });
+
+            if (res.ok) {
+                alert('✅ Perfil actualizado correctamente');
+                localStorage.setItem('nombre', nombre);
+                cargarPerfil();
+            } else {
+                const error = await res.json();
+                alert('❌ Error: ' + (error.error || error.message));
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error al guardar el perfil');
+        }
+    }
+
+    // Mapeo de imágenes de servicios por palabras clave
+    const servicioImages = {
+        'corte': 'https://images.unsplash.com/photo-1599407367267-f3a1df6cd13b?auto=format&fit=crop&w=600&q=80',
+        'barba': 'https://images.unsplash.com/photo-1595617707802-a9403604ff04?auto=format&fit=crop&w=600&q=80',
+        'fade': 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=80',
+        'afeitar': 'https://images.unsplash.com/photo-1599407373949-28747cef1b1a?auto=format&fit=crop&w=600&q=80',
+        'tinte': 'https://images.unsplash.com/photo-1565521409098-33fdecd86f13?auto=format&fit=crop&w=600&q=80',
+        'diseño': 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=600&q=80',
+        'default': 'https://images.unsplash.com/photo-1537639507592-cc4467fb1923?auto=format&fit=crop&w=600&q=80'
+    };
+
+    function obtenerImagenServicio(nombre) {
+        const nombreBajo = nombre.toLowerCase();
+        for (const [clave, url] of Object.entries(servicioImages)) {
+            if (clave !== 'default' && nombreBajo.includes(clave)) return url;
+        }
+        return servicioImages.default;
+    }
+
+    async function cargarServicios() {
+        try {
+            const res = await fetch('/api/servicios');
+            const servicios = await res.json();
+            const container = document.getElementById('servicios-container');
+
+            if (servicios.length === 0) {
+                container.innerHTML = '<div class="no-data">No hay servicios disponibles en este momento</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            servicios.forEach(s => {
+                const imagenUrl = obtenerImagenServicio(s.nombre);
+                const html = `
+                    <div class="service-card">
+                        <img src="${imagenUrl}" alt="${s.nombre}" class="service-image" onerror="this.src='https://images.unsplash.com/photo-1537639507592-cc4467fb1923?auto=format&fit=crop&w=600&q=80'">
+                        <div class="service-info">
+                            <h3>${s.nombre}</h3>
+                            <p style="color: var(--muted); font-size: 14px;">${s.descripcion || 'Servicio profesional'}</p>
+                            <div class="service-price">$${s.precio.toLocaleString()}</div>
+                            <p style="font-size: 12px; color: #999;">⏱️ ${s.duracion_minutos} minutos</p>
+                            <button class="btn btn-primary btn-block" style="margin-top: 15px;" onclick="mostrarFormularioReserva(${s.id}, '${s.nombre}')">Agendar</button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        } catch (error) {
+            console.error('Error cargando servicios:', error);
+        }
+    }
+
+    async function cargarBarberos() {
+        try {
+            const res = await fetch('/api/usuarios');
+            const usuarios = await res.json();
+            const barberos = usuarios.filter(u => u.rol === 'BARBERO' || u.rol === 'ADM');
+            const container = document.getElementById('barberos-container');
+
+            if (barberos.length === 0) {
+                container.innerHTML = '<div class="no-data">No hay barberos disponibles</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            barberos.forEach(b => {
+                const html = `
+                    <div class="barbero-card">
+                        <div class="barbero-header">
+                            <div class="barbero-avatar">${b.nombre.charAt(0).toUpperCase()}</div>
+                            <h3>${b.nombre}</h3>
+                            <p style="font-size: 12px; opacity: 0.9;">Barbero Profesional</p>
+                        </div>
+                        <div class="barbero-content">
+                            <div class="barbero-info">📧 ${b.email}</div>
+                            <div class="barbero-info">📞 ${b.telefono || 'No disponible'}</div>
+                            <p style="margin-top: 10px; font-size: 13px; color: #555; min-height: 40px;">${b.bio || 'Barbero experimentado en cortes modernos'}</p>
+                            <button class="btn btn-primary btn-block" style="margin-top: 15px;" onclick="verPerfil(${b.id})">Ver Perfil</button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        } catch (error) {
+            console.error('Error cargando barberos:', error);
+        }
+    }
+
+    async function cargarCitas() {
+        try {
+            const res = await fetch('/api/citas');
+            let citas = await res.json();
+            citas = citas.filter(c => c.cliente_id === usuarioId);
+            const tbody = document.getElementById('tabla-citas');
+
+            if (citas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">No tienes citas agendadas. ¡Agenda una ahora!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            citas.forEach(c => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${c.fecha}</strong><br><small style="color: #999;">${c.hora}</small></td>
+                        <td>💈 ${c.barbero?.nombre || 'N/A'}</td>
+                        <td>✂️ ${c.servicio?.nombre || 'N/A'}</td>
+                        <td>$${c.servicio?.precio.toLocaleString() || 'N/A'}</td>
+                        <td><button class="btn btn-danger btn-small" onclick="cancelarCita(${c.id})">Cancelar</button></td>
+                    </tr>
+                `;
+            });
+        } catch (error) {
+            console.error('Error cargando citas:', error);
+        }
+    }
+
+    function mostrarFormularioReserva(servicioId, nombreServicio) {
+        const fecha = prompt('📅 Ingresa la fecha (YYYY-MM-DD):');
+        if (!fecha) return;
+
+        const hora = prompt('🕐 Ingresa la hora (HH:MM):');
+        if (!hora) return;
+
+        const barberoId = prompt('💈 Ingresa el ID del barbero (puedes verlo en el panel de Barberos):');
+        if (!barberoId) return;
+
+        confirmarReserva(servicioId, barberoId, fecha, hora);
+    }
+
+    async function confirmarReserva(servicioId, barberoId, fecha, hora) {
+        const token = localStorage.getItem('token');
+
+        try {
+            const res = await fetch('/api/citas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ cliente_id: usuarioId, barbero_id: barberoId, servicio_id: servicioId, fecha, hora })
+            });
+
+            if (res.ok) {
+                alert('✅ Cita agendada correctamente');
+                cargarCitas();
+                mostrarSeccion('citas');
+            } else {
+                const error = await res.json();
+                alert('❌ Error: ' + (error.error || error.message));
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error al agendar la cita');
+        }
+    }
+
+    async function cancelarCita(citaId) {
+        if (!confirm('¿Seguro que deseas cancelar esta cita?')) return;
+
+        const token = localStorage.getItem('token');
+
+        try {
+            const res = await fetch(`/api/citas/cliente/${citaId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (res.ok) {
+                alert('✅ Cita cancelada');
+                cargarCitas();
+            } else {
+                const error = await res.json();
+                alert('❌ Error: ' + (error.error || error.message));
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error al cancelar la cita');
+        }
+    }
+
+    function verPerfil(barberoId) {
+        window.location.href = `/perfil-barbero.html?id=${barberoId}`;
+    }
+</script>
+
+</body>
+</html>

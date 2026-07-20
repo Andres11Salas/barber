@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil del Barbero - Barbería</title>
+    <style>
+        :root {
+            --brand-blue: #1f618d;
+            --brand-light-blue: #3498db;
+            --brand-red: #c0392b;
+            --muted: #7f8c8d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(180deg, #fafbfd 0%, #f4f6f8 100%);
+            color: #222;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background: var(--brand-blue);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .btn-danger {
+            background: var(--brand-red);
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Perfil banner */
+        .perfil-banner {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        .perfil-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--brand-blue), var(--brand-light-blue));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            flex-shrink: 0;
+        }
+
+        .perfil-datos h2 {
+            margin: 0 0 10px 0;
+            color: var(--brand-blue);
+            font-size: 28px;
+        }
+
+        .perfil-datos p {
+            margin: 5px 0;
+            color: var(--muted);
+        }
+
+        h3 {
+            color: var(--brand-blue);
+            border-bottom: 2px solid var(--brand-light-blue);
+            padding-bottom: 10px;
+        }
+
+        /* Servicios */
+        .servicios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .servicio-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .servicio-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+
+        .servicio-card h4 {
+            margin: 0 0 10px 0;
+            color: var(--brand-blue);
+        }
+
+        .servicio-desc {
+            color: var(--muted);
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
+        .servicio-precio {
+            font-size: 24px;
+            color: var(--brand-red);
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .servicio-tiempo {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        /* Publicaciones */
+        .publicaciones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .publicacion-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .publicacion-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+
+        .publicacion-header {
+            padding: 15px;
+            background: #f9fafb;
+            border-bottom: 1px solid #eee;
+        }
+
+        .publicacion-titulo {
+            font-weight: 700;
+            color: var(--brand-blue);
+            margin: 0;
+        }
+
+        .publicacion-fecha {
+            font-size: 12px;
+            color: var(--muted);
+            margin: 5px 0 0 0;
+        }
+
+        .publicacion-preview {
+            min-height: 180px;
+            background: #f9fafb;
+            padding: 15px;
+            overflow: hidden;
+        }
+
+        .publicacion-preview img,
+        .publicacion-preview video {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .publicacion-desc {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .publicacion-stats {
+            padding: 10px 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--muted);
+            background: white;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .perfil-banner {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .servicios-grid, .publicaciones-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="styles/dashboard.css">
+</head>
+<body>
+
+<div class="header">
+    <a href="/galeria-publicaciones.html" style="text-decoration: none; color: white;">
+        <h1>💈 Perfil del Barbero</h1>
+    </a>
+    <div>
+        <span id="nombre-usuario" style="margin-right: 15px;"></span>
+        <button class="btn btn-danger" onclick="cerrarSesion()">Salir</button>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Perfil del Barbero -->
+    <div class="perfil-banner">
+        <div class="perfil-avatar" id="barbero-avatar">💈</div>
+        <div class="perfil-datos">
+            <h2 id="barbero-nombre">Cargando...</h2>
+            <p><strong>Email:</strong> <span id="barbero-email">-</span></p>
+            <p><strong>Teléfono:</strong> <span id="barbero-telefono">-</span></p>
+            <p id="barbero-bio" style="margin-top: 15px; font-style: italic; color: #555;"></p>
+        </div>
+    </div>
+
+    <!-- Servicios del Barbero -->
+    <h3>✂️ Servicios Disponibles</h3>
+    <div id="servicios-container" class="servicios-grid">
+        <div class="no-data">Cargando servicios...</div>
+    </div>
+
+    <!-- Publicaciones del Barbero -->
+    <h3 style="margin-top: 40px;">📸 Publicaciones</h3>
+    <div id="publicaciones-container" class="publicaciones-grid">
+        <div class="no-data">Este barbero aún no tiene publicaciones</div>
+    </div>
+</div>
+
+<script>
+    let usuarioId = null;
+    let barberoId = null;
+
+    window.onload = () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/';
+            return;
+        }
+
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        usuarioId = payload.id;
+        document.getElementById('nombre-usuario').innerText = `Hola, ${localStorage.getItem('nombre')}`;
+
+        const params = new URLSearchParams(window.location.search);
+        barberoId = params.get('id');
+
+        if (!barberoId) {
+            document.querySelector('.container').innerHTML = '<div class="no-data">Barbero no encontrado</div>';
+            return;
+        }
+
+        cargarPerfil();
+        cargarServicios();
+        cargarPublicaciones();
+    };
+
+    async function cargarPerfil() {
+        try {
+            const res = await fetch(`/api/usuarios/${barberoId}`);
+            const barbero = await res.json();
+
+            document.getElementById('barbero-avatar').innerText = barbero.nombre.charAt(0).toUpperCase();
+            document.getElementById('barbero-nombre').innerText = barbero.nombre;
+            document.getElementById('barbero-email').innerText = barbero.email;
+            document.getElementById('barbero-telefono').innerText = barbero.telefono || 'No disponible';
+        } catch (error) {
+            console.error('Error cargando perfil:', error);
+        }
+    }
+
+    async function cargarServicios() {
+        try {
+            const res = await fetch('/api/servicios');
+            const servicios = await res.json();
+            const container = document.getElementById('servicios-container');
+
+            if (servicios.length === 0) {
+                container.innerHTML = '<div class="no-data">Este barbero no ofrece servicios en este momento</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            servicios.forEach(s => {
+                const html = `
+                    <div class="servicio-card">
+                        <h4>${s.nombre}</h4>
+                        <p class="servicio-desc">${s.descripcion || 'Servicio profesional'}</p>
+                        <div class="servicio-precio">$${s.precio.toLocaleString()}</div>
+                        <div class="servicio-tiempo">⏱️ ${s.duracion_minutos} minutos</div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        } catch (error) {
+            console.error('Error cargando servicios:', error);
+        }
+    }
+
+    async function cargarPublicaciones() {
+        try {
+            const res = await fetch(`/api/publicaciones/barbero/${barberoId}`);
+            const publicaciones = await res.json();
+            const container = document.getElementById('publicaciones-container');
+
+            if (publicaciones.length === 0) {
+                container.innerHTML = '<div class="no-data">Este barbero aún no tiene publicaciones</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            publicaciones.forEach(pub => {
+                const html = `
+                    <div class="publicacion-card">
+                        <div class="publicacion-header">
+                            <h4 class="publicacion-titulo">${pub.titulo}</h4>
+                            <p class="publicacion-fecha">${new Date(pub.createdAt).toLocaleDateString('es-MX')}</p>
+                        </div>
+                        <div class="publicacion-preview">
+                            ${pub.contenido_json?.imagenes ? pub.contenido_json.imagenes.slice(0, 1).map(img => 
+                                `<img src="${img}" alt="publicacion">`
+                            ).join('') : ''}
+                            <p class="publicacion-desc">${pub.descripcion}</p>
+                        </div>
+                        <div class="publicacion-stats">
+                            <span>👍 ${pub.likes_count} Me gusta</span>
+                            <span>💬 ${pub.comentarios?.length || 0} Comentarios</span>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        } catch (error) {
+            console.error('Error cargando publicaciones:', error);
+        }
+    }
+
+    function cerrarSesion() {
+        localStorage.clear();
+        window.location.href = '/';
+    }
+</script>
+
+</body>
+</html>

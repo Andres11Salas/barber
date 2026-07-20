@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbero - Barbería VIP</title>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #c9a84c;
+            --accent-light: #e8c65a;
+            --gold-gradient: linear-gradient(135deg, #c9a84c, #e8c65a, #c9a84c);
+            --bg-dark: #111;
+            --bg-card: #1a1a1a;
+            --text-light: #f0f0f0;
+            --text-muted: #999;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-dark); color: var(--text-light); }
+        .header { background: linear-gradient(180deg,#0a0a0a 0%,#1a1a2e 100%); padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
+        .header h1 { font-family: 'Playfair Display', serif; font-size: 22px; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tabs-container { background: #0a0a0a; border-bottom: 1px solid #222; padding: 0 15px; display: flex; gap: 3px; position: sticky; top: 56px; z-index: 99; overflow-x: auto; }
+        .tab-btn { padding: 12px 16px; border: none; background: none; cursor: pointer; font-weight: 600; color: #666; border-bottom: 3px solid transparent; transition: 0.2s; font-size: 14px; white-space: nowrap; text-transform: uppercase; letter-spacing: 1px; }
+        .tab-btn:hover { color: var(--accent); }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 25px 15px; }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        h2 { font-family: 'Oswald', sans-serif; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 8px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; font-size: 20px; }
+        .perfil-card { background: var(--bg-card); border-radius: 12px; padding: 25px; border: 1px solid rgba(201,168,76,0.15); max-width: 600px; }
+        .perfil-card p { margin: 8px 0; font-size: 14px; }
+        .perfil-card strong { color: var(--accent); }
+        table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 10px; overflow: hidden; border: 1px solid rgba(201,168,76,0.1); margin-top: 15px; }
+        thead { background: #0a0a0a; }
+        th { padding: 12px 15px; text-align: left; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; font-size: 12px; }
+        td { padding: 12px 15px; border-bottom: 1px solid #222; font-size: 14px; }
+        tbody tr:hover { background: rgba(201,168,76,0.05); }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.3s; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-primary { background: var(--gold-gradient); color: #000; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(201,168,76,0.3); }
+        .btn-danger { background: #c0392b; color: white; }
+        .btn-danger:hover { background: #a93226; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-warning { background: #e67e22; color: white; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .badge-adm { background: #c0392b; color: white; }
+        .badge-barbero { background: var(--accent); color: #000; }
+        .badge-cliente { background: #3498db; color: white; }
+        .pub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; margin-top: 15px; }
+        .pub-card { background: var(--bg-card); border-radius: 10px; border: 1px solid rgba(201,168,76,0.1); padding: 16px; }
+        .pub-card h4 { color: var(--accent); font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .pub-card p { color: #ccc; font-size: 13px; margin: 5px 0; }
+        .no-data { text-align: center; padding: 40px; color: #666; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #333; border-radius: 6px; background: #222; color: #f0f0f0; font-size: 14px; margin: 5px 0 12px; }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 2px rgba(201,168,76,0.15); }
+        label { display: block; font-weight: 600; margin-bottom: 3px; color: var(--accent); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+        .field-error { color: #e74c3c; font-size: 12px; margin-top: 2px; display: block; }
+        @media (max-width:768px) { .header{flex-direction:column;gap:8px;text-align:center} .tabs-container{top:90px} th,td{padding:8px 10px;font-size:12px} }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>💈 Barbería VIP</h1>
+    <div><span style="color:var(--accent);font-weight:600;font-size:14px;" id="badge-rol"></span><button class="btn btn-danger btn-small" onclick="cerrarSesion()">Salir</button></div>
+</div>
+<div class="tabs-container">
+    <button class="tab-btn active" onclick="mostrarSeccion('perfil',this)">👤 Perfil</button>
+    <button class="tab-btn" onclick="mostrarSeccion('citas',this)">📅 Mis Citas</button>
+    <button class="tab-btn" onclick="mostrarSeccion('publicaciones',this)">📸 Publicaciones</button>
+</div>
+<div class="container">
+    <div id="sec-perfil" class="section active">
+        <h2>👤 Mi Perfil</h2>
+        <div class="perfil-card">
+            <p><strong>ID:</strong> <span id="perfil-id">-</span></p>
+            <p><strong>Nombre:</strong> <span id="perfil-nombre">-</span></p>
+            <p><strong>Email:</strong> <span id="perfil-email">-</span></p>
+            <p><strong>Rol:</strong> <span id="perfil-rol">-</span></p>
+        </div>
+    </div>
+    <div id="sec-citas" class="section">
+        <h2>📅 Mi Agenda</h2>
+        <table><thead><tr><th>Fecha/Hora</th><th>Cliente</th><th>Servicio</th><th>Precio</th></tr></thead><tbody id="tabla-citas"><tr><td colspan="4" style="text-align:center;padding:30px;color:#666;">Cargando...</td></tr></tbody></table>
+    </div>
+    <div id="sec-publicaciones" class="section">
+        <h2>📸 Mis Publicaciones</h2>
+        <div style="background:var(--bg-card);border-radius:10px;padding:18px;border:1px solid rgba(201,168,76,0.1);margin-bottom:20px;">
+            <h3 style="color:var(--accent);margin-bottom:15px;">Crear Publicación</h3>
+            <label>Título</label><input type="text" id="pub-titulo"><span class="field-error" id="err-pub-titulo"></span>
+            <label>Descripción</label><textarea id="pub-descripcion" rows="3"></textarea><span class="field-error" id="err-pub-descripcion"></span>
+            <label>URL de imagen</label><input type="url" id="pub-imagen" placeholder="https://ejemplo.com/foto.jpg">
+            <button class="btn btn-primary" onclick="crearPublicacion()">📤 Publicar</button>
+        </div>
+        <div id="publicaciones-container" class="pub-grid"><div class="no-data">Cargando...</div></div>
+    </div>
+</div>
+<script>
+    let miId = null, token = localStorage.getItem('token'), rol = localStorage.getItem('rol'), refreshToken = localStorage.getItem('refresh');
+    async function refrescarToken(){
+        if(!refreshToken) return false;
+        try{
+            const r = await fetch('/api/auth/refresh',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refresh:refreshToken})});
+            if(!r.ok) return false;
+            const d = await r.json();
+            token = d.access; localStorage.setItem('token',token);
+            refreshToken = d.refresh||refreshToken; localStorage.setItem('refresh',refreshToken);
+            return true;
+        }catch(e){ return false; }
+    }
+    window.onload = () => {
+        if (!token || rol !== 'BARBERO') { window.location.href = '/'; return; }
+        document.getElementById('badge-rol').innerText = '👤 ' + rol;
+        const p = JSON.parse(atob(token.split('.')[1])); miId = p.id || p.user_id;
+        cargarPerfil(); cargarCitas(); cargarPublicaciones();
+        setInterval(refrescarToken,55*60*1000);
+    };
+    function mostrarSeccion(s,btn){
+        document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+        document.getElementById('sec-'+s).classList.add('active');
+        if(btn) btn.classList.add('active');
+        if(s==='publicaciones') cargarPublicaciones();
+    }
+    function cerrarSesion(){ localStorage.clear(); window.location.href='/'; }
+    async function cargarPerfil(){
+        try {
+            const r = await fetch('/api/usuarios/'+miId,{headers:{'Authorization':'Bearer '+token}}); const d = await r.json();
+            document.getElementById('perfil-id').innerText=d.id;
+            document.getElementById('perfil-nombre').innerText=d.nombre;
+            document.getElementById('perfil-email').innerText=d.email;
+            document.getElementById('perfil-rol').innerText=d.rol;
+        }catch(e){}
+    }
+    async function cargarCitas(){
+        try {
+            const r = await fetch('/api/citas',{headers:{'Authorization':'Bearer '+token}}); let citas = await r.json();
+            citas = citas.filter(c=>c.barbero?.id===miId);
+            const t = document.getElementById('tabla-citas');
+            if(!citas.length){ t.innerHTML='<tr><td colspan="4" style="text-align:center;padding:30px;color:#666;">Sin citas agendadas</td></tr>'; return; }
+            t.innerHTML='';
+            citas.forEach(c=>{
+                t.innerHTML+=`<tr><td><strong>${c.fecha}</strong><br><small style="color:#666;">${c.hora}</small></td><td>👤 ${c.cliente?.nombre||'N/A'}</td><td>✂️ ${c.servicio?.nombre||'N/A'}</td><td>$${c.servicio?.precio||'N/A'}</td></tr>`;
+            });
+        }catch(e){}
+    }
+    async function cargarPublicaciones(){
+        try {
+            const r = await fetch('/api/publicaciones/barbero/'+miId);
+            const pubs = await r.json();
+            const c = document.getElementById('publicaciones-container');
+            if(!pubs.length){ c.innerHTML='<div class="no-data">Sin publicaciones</div>'; return; }
+            c.innerHTML='';
+            pubs.forEach(p=>{
+                const img = (p.contenido_json?.imagen||p.contenido_json?.imagenes?.[0]||'');
+                c.innerHTML+=`<div class="pub-card"><h4>${p.titulo}</h4><p>${(p.descripcion||'').substring(0,120)}</p>${img?`<img src="${img}" style="width:100%;height:120px;object-fit:cover;border-radius:6px;margin:8px 0;" loading="lazy">`:''}<div style="display:flex;gap:12px;margin-top:10px;padding-top:8px;border-top:1px solid #222;font-size:12px;color:#888;">👍 ${p.likes_count||0} | 💬 ${p.comentarios?.length||0}</div><div style="margin-top:8px;"><button class="btn btn-danger btn-small" onclick="eliminarPublicacion(${p.id})">Eliminar</button></div></div>`;
+            });
+        }catch(e){}
+    }
+    function clearPubErrors(){ ['titulo','descripcion'].forEach(f=>{const e=document.getElementById('err-pub-'+f);if(e)e.textContent='';}); }
+    async function crearPublicacion(){
+        clearPubErrors(); let ok=true;
+        const titulo=document.getElementById('pub-titulo').value.trim();
+        const descripcion=document.getElementById('pub-descripcion').value.trim();
+        const imagen=document.getElementById('pub-imagen').value.trim();
+        if(!titulo){document.getElementById('err-pub-titulo').textContent='El título es obligatorio.';ok=false}
+        if(!descripcion){document.getElementById('err-pub-descripcion').textContent='La descripción es obligatoria.';ok=false}
+        if(!ok) return;
+        try {
+            const r = await fetch('/api/publicaciones',{
+                method:'POST',
+                headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+                body:JSON.stringify({titulo,descripcion,contenido_json:{imagen}})
+            });
+            if(r.ok){
+                await Swal.fire({icon:'success',title:'Publicación creada',timer:1500,showConfirmButton:false,background:'#1a1a1a',color:'#f0f0f0'});
+                document.getElementById('pub-titulo').value=''; document.getElementById('pub-descripcion').value=''; document.getElementById('pub-imagen').value='';
+                cargarPublicaciones();
+            } else {
+                const d = await r.json();
+                await Swal.fire({icon:'error',title:'Error',text:d.error||d.message||'No se pudo crear',background:'#1a1a1a',color:'#f0f0f0'});
+            }
+        }catch(e){ await Swal.fire({icon:'error',title:'Error de conexión',background:'#1a1a1a',color:'#f0f0f0'}); }
+    }
+    async function eliminarPublicacion(id){
+        const r = await Swal.fire({title:'¿Eliminar?',icon:'warning',showCancelButton:true,confirmButtonText:'Sí',cancelButtonText:'No',background:'#1a1a1a',color:'#f0f0f0'});
+        if(!r.isConfirmed) return;
+        try {
+            const res = await fetch('/api/publicaciones/'+id,{method:'DELETE',headers:{'Authorization':'Bearer '+token}});
+            if(res.ok){ await Swal.fire({icon:'success',title:'Eliminada',timer:1500,showConfirmButton:false,background:'#1a1a1a',color:'#f0f0f0'}); cargarPublicaciones(); }
+            else { const d = await res.json(); await Swal.fire({icon:'error',title:'Error',text:d.error||d.message,background:'#1a1a1a',color:'#f0f0f0'}); }
+        }catch(e){}
+    }
+</script>
+</body>
+</html>
